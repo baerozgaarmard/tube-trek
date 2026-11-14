@@ -50,5 +50,13 @@ desktop.ini
 *.swp
 *.swo
 
-# ── Logs ─────────────────────────────────
+# ── Logs & Session Runs ─────────────────────
 *.log
+.agent/
+
+# ── One-off Video Production Scripts ─────────
+produce_*.py
+upload_*.py
+do_upload.py
+batch_produce*.py
+scratch/
