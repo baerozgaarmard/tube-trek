@@ -1,0 +1,54 @@
+# ── Python ───────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+*.egg
+.eggs/
+
+# ── Virtual environments ─────────────────
+venv/
+.venv/
+env/
+.env/
+ENV/
+
+# ── Secrets — NEVER commit these ─────────
+client_secret.json
+youtube_token.pickle
+.env
+*.pickle
+*.pkl
+
+# ── Downloaded fonts (fetched from Google Fonts on first run) ──
+assets/fonts/
+
+# ── Generated output — large files ───────
+output/
+output/images/
+*.mp4
+*.mp3
+*.wav
+*.jpg
+*.jpeg
+*.png
+# allow docs screenshots
+!docs/screenshots/*.png
+
+# ── OS junk ──────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── IDE ───────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ── Logs ─────────────────────────────────
+*.log

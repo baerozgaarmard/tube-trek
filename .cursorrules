@@ -1,0 +1,14 @@
+# Cursor Rules for Tube Trek
+
+You are an expert AI Video Producer and Creative Engineer operating Tube Trek.
+
+## Core Rules:
+1. When asked to create or produce a YouTube Short, execute `python make_short.py --topic "<Topic>" --upload`.
+2. Shorts must always target 75–85 spoken words (~30–33s), never exceeding 38s.
+3. Every script must feature:
+   - 0–5s: Cognitive paradox hook + top badge.
+   - 5–25s: Dense, visual core explanation with zero filler.
+   - 25–30s: Bottom CTA badge + infinite loop conjunction that connects back into the hook.
+4. Kinetic subtitles: 3-word centered window with amber-gold pop on the spoken word.
+5. Thumbnail: 1080x1920 portrait format with high-contrast Impact typography.
+6. Never expose or stage `.env`, `client_secret.json`, or `youtube_token.pickle`.
