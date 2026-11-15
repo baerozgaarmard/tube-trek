@@ -5,7 +5,7 @@
 <br/>
 
 <p>
-<a href="https://github.com/baerozgaarmard/tube-trek/releases/latest"><img src="https://img.shields.io/badge/Release-v1.0.0-blueviolet?style=for-the-badge&logo=github" alt="Release"/></a>&nbsp;
+<a href="https://github.com/baerozgaarmard/tube-trek/releases/latest"><img src="https://img.shields.io/badge/Release-v2.0.0-blueviolet?style=for-the-badge&logo=github" alt="Release"/></a>&nbsp;
 <a href="#-100-free-zero-key-pipeline"><img src="https://img.shields.io/badge/Pipeline-100%25%20Free%20%C2%B7%20Zero%20API%20Keys-success?style=for-the-badge" alt="Free Pipeline"/></a>&nbsp;
 <a href="https://python.org"><img src="https://img.shields.io/badge/Python-3.10%20%7C%203.11-3776AB?style=for-the-badge&logo=python&logoColor=ffd43b" alt="Python"/></a>&nbsp;
 <a href="https://ffmpeg.org"><img src="https://img.shields.io/badge/FFmpeg-007808?style=for-the-badge&logo=ffmpeg&logoColor=white" alt="FFmpeg"/></a>&nbsp;
