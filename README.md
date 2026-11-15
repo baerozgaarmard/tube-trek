@@ -280,27 +280,103 @@ python make_short.py --topic "Why Paper Cuts Hurt More Than A Knife"
 
 ---
 
-## 👥 Collaborators
+## 👥 Core Engineering & Architecture
 
 <div align="center">
+
+<p align="center">
+  <b>The minds behind Tube Trek's zero-cost autonomous video engine.</b><br/>
+  <i>Engineered for cinematic 9:16 Shorts with sub-bass audio ducking and kinetic typography.</i>
+</p>
+
+<br/>
+
 <table>
 <tr>
-<td align="center" width="200">
+<td align="center" width="390" valign="top">
+<br/>
 <a href="https://github.com/baerozgaarmard">
-<img src="https://github.com/baerozgaarmard.png" width="80" style="border-radius:50%;" alt="Ayush Bhatt"/><br/>
-<b>Ayush Bhatt</b></a><br/>
-<sub>Creator & Lead Architect</sub><br/>
-<a href="https://github.com/baerozgaarmard"><img src="https://img.shields.io/badge/-baerozgaarmard-181717?style=flat-square&logo=github" alt="GitHub"/></a>
+  <img src="https://github.com/baerozgaarmard.png" width="120" height="120" style="border-radius:50%;" alt="Ayush Bhatt"/>
+</a>
+<br/><br/>
+<a href="https://github.com/baerozgaarmard">
+  <b><font size="+2">Ayush Bhatt</font></b>
+</a>
+<br/><br/>
+<a href="https://github.com/baerozgaarmard">
+  <img src="https://img.shields.io/badge/Role-Creator%20%26%20Lead%20Architect-FF4500?style=for-the-badge&logo=rocket&logoColor=white" alt="Creator & Lead Architect"/>
+</a>
+<br/><br/>
+<p align="center">
+  <i>"Full-stack dev shipping websites, Android apps & AI agents at BrandForge Media."</i><br/>
+  📍 <b>Dehradun, India</b>
+</p>
+<br/>
+<b>Core Focus & Modules</b><br/>
+<kbd>🎬 Compositor Engine</kbd> <kbd>🤖 Agentic Pipeline</kbd><br/>
+<kbd>⚡ Zero-Key Engine</kbd> <kbd>📦 CI/CD & Packages</kbd>
+<br/><br/>
+<b>Connect & Follow</b><br/>
+<a href="https://github.com/baerozgaarmard">
+  <img src="https://img.shields.io/github/followers/baerozgaarmard?label=Follow%20%40baerozgaarmard&style=social" alt="Follow @baerozgaarmard"/>
+</a>
+<br/><br/>
+<a href="https://github.com/baerozgaarmard">
+  <img src="https://img.shields.io/badge/GitHub-Profile-181717?style=flat-square&logo=github&logoColor=white" alt="GitHub Profile"/>
+</a>&nbsp;
+<a href="https://brandforge-media.vercel.app/">
+  <img src="https://img.shields.io/badge/Portfolio-BrandForge-ff6a00?style=flat-square&logo=vercel&logoColor=white" alt="BrandForge Media"/>
+</a>&nbsp;
+<a href="https://twitter.com/baerozgaarmard">
+  <img src="https://img.shields.io/badge/X-baerozgaarmard-000000?style=flat-square&logo=x&logoColor=white" alt="Twitter/X"/>
+</a>
+<br/><br/>
 </td>
-<td align="center" width="200">
+
+<td align="center" width="390" valign="top">
+<br/>
 <a href="https://github.com/tanisha162">
-<img src="https://github.com/tanisha162.png" width="80" style="border-radius:50%;" alt="Tanisha Gupta"/><br/>
-<b>Tanisha Gupta</b></a><br/>
-<sub>Core Engineer & Collaborator</sub><br/>
-<a href="https://github.com/tanisha162"><img src="https://img.shields.io/badge/-tanisha162-181717?style=flat-square&logo=github" alt="GitHub"/></a>
+  <img src="https://github.com/tanisha162.png" width="120" height="120" style="border-radius:50%;" alt="Tanisha Gupta"/>
+</a>
+<br/><br/>
+<a href="https://github.com/tanisha162">
+  <b><font size="+2">Tanisha Gupta</font></b>
+</a>
+<br/><br/>
+<a href="https://github.com/tanisha162">
+  <img src="https://img.shields.io/badge/Role-Core%20Engineer%20%26%20Collaborator-7928CA?style=for-the-badge&logo=codefactor&logoColor=white" alt="Core Engineer & Collaborator"/>
+</a>
+<br/><br/>
+<p align="center">
+  <i>"Full-Stack & AI/ML Engineer | Building RAG & Agentic Systems | B.Tech CSE Jaypee '27"</i><br/>
+  ⚡ <b>500+ DSA @ LeetCode</b>
+</p>
+<br/>
+<b>Core Focus & Modules</b><br/>
+<kbd>🔊 Dynamic Sub-Bass Ducking</kbd> <kbd>✨ Kinetic Captions</kbd><br/>
+<kbd>🧠 Multi-Engine QA</kbd> <kbd>🔄 Infinite Loop Hooks</kbd>
+<br/><br/>
+<b>Connect & Follow</b><br/>
+<a href="https://github.com/tanisha162">
+  <img src="https://img.shields.io/github/followers/tanisha162?label=Follow%20%40tanisha162&style=social" alt="Follow @tanisha162"/>
+</a>
+<br/><br/>
+<a href="https://github.com/tanisha162">
+  <img src="https://img.shields.io/badge/GitHub-Profile-181717?style=flat-square&logo=github&logoColor=white" alt="GitHub Profile"/>
+</a>&nbsp;
+<a href="mailto:gtanisha162@gmail.com">
+  <img src="https://img.shields.io/badge/Email-Get%20in%20Touch-EA4335?style=flat-square&logo=gmail&logoColor=white" alt="Email"/>
+</a>&nbsp;
+<a href="https://github.com/baerozgaarmard/tube-trek/commits?author=tanisha162">
+  <img src="https://img.shields.io/badge/Commits-Verified%20Author-238636?style=flat-square&logo=git&logoColor=white" alt="Commits"/>
+</a>
+<br/><br/>
 </td>
 </tr>
 </table>
+
+<br/>
+
 </div>
 
 ---
