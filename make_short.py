@@ -11,6 +11,7 @@ import json
 import os
 import re
 import sys
+sys.dont_write_bytecode = True
 from pathlib import Path
 
 # Ensure UTF-8 output on Windows consoles
@@ -26,7 +27,7 @@ from video.narrator import generate_narration
 from video.music import mix_music_with_narration
 from video.creator import create_video
 from video.thumbnail import render as render_thumb
-from uploader.youtube import upload_to_youtube
+from uploader.multi import publish_short
 
 
 def slugify(text: str) -> str:
@@ -106,6 +107,7 @@ def produce_short(
     voice_id: str = None,
     music_volume: float = 0.14,
     upload: bool = False,
+    platforms: list = None,
     privacy: str = "public",
     schedule: str = None,
     thumb_text: str = None,
@@ -141,26 +143,33 @@ def produce_short(
         else:
             config.VOICE_ID = voice_id
 
-    # 3. Download Curated B-Roll
-    print("\n[1/5] Ingesting visual B-roll with zero-loop pacing...")
+    # 3. Download Curated Motion B-Roll & High-Res Shots
+    print("\n[1/5] Ingesting motion B-roll video & high-contrast shots...")
     image_map = download_images(script, job_dir)
 
     # 4. Synthesize Audio & Kinetic Timestamps
     print("\n[2/5] Synthesizing voiceover narration & word-level timing...")
     audio_path = generate_narration(script, job_dir)
 
-    # 5. Mix Audio Bed
-    print(f"\n[3/5] Mixing tension sub-bass audio bed (volume: {int(music_volume * 100)}%)...")
+    # 5. Mix Audio Bed & Procedural Micro-SFX
+    shot_count = sum(len(paths) if isinstance(paths, list) else 1 for paths in image_map.values() if paths)
+    slot_dur = max(1.25, min(3.5, 30.0 / max(1, shot_count)))
+    cut_timestamps = [round(i * slot_dur, 2) for i in range(1, shot_count)]
+
+    print(f"\n[3/5] Mixing tension sub-bass audio bed & procedural micro-SFX (volume: {int(music_volume * 100)}%)...")
     mixed_audio_path = os.path.join(job_dir, "narration_mixed.mp3")
     final_audio = mix_music_with_narration(
         narration_path=audio_path,
         output_path=mixed_audio_path,
         music_volume=music_volume,
         library_dir=config.MUSIC_LIBRARY_DIR,
+        job_dir=job_dir,
+        cut_timestamps=cut_timestamps,
+        enable_sfx=True,
     )
 
     # 6. Composite 1080x1920 Short
-    print("\n[4/5] Compositing 1080x1920 vertical Short with kinetic subtitles...")
+    print("\n[4/5] Compositing 1080x1920 vertical Short with kinetic subtitles & motion cuts...")
     video_path = create_video(script, final_audio, job_dir, image_map, video_type="shorts")
 
     # 7. Render Portrait Thumbnail
@@ -188,25 +197,26 @@ def produce_short(
     clip.close()
     print(f"   ✓ Video rendered successfully: {video_path} ({duration:.1f}s)")
 
-    # 9. Upload
-    yt_url = None
+    # 9. Multi-Platform Syndication
+    syndication_results = {}
     if upload:
-        print("\n🚀 Uploading to YouTube with IPv4 resilience & chunked retry...")
-        yt_url = upload_to_youtube(
+        target_platforms = platforms or ["youtube"]
+        print(f"\n🚀 Syndicating across platforms: {', '.join(target_platforms).upper()}...")
+        syndication_results = publish_short(
             script=script,
             video_path=video_path,
             thumbnail_path=thumb_path if os.path.exists(thumb_path) else None,
-            publish_at=schedule,
-            privacy_status=privacy,
+            platforms=target_platforms,
+            privacy=privacy,
+            schedule=schedule,
         )
-        print(f"\n🎉 LIVE ON YOUTUBE: {yt_url}\n")
 
     return {
         "title": script["title"],
         "video_path": video_path,
         "thumbnail_path": thumb_path,
         "duration": duration,
-        "youtube_url": yt_url,
+        "syndication": syndication_results,
     }
 
 
@@ -217,7 +227,9 @@ def main():
     parser.add_argument("--voice", type=str, choices=["elevenlabs", "edge-tts"], default=None, help="Voice engine")
     parser.add_argument("--voice-id", type=str, default=None, help="Specific Voice ID")
     parser.add_argument("--music-volume", type=float, default=0.14, help="Background music volume (0.0 to 1.0)")
-    parser.add_argument("--upload", action="store_true", help="Upload immediately to YouTube")
+    parser.add_argument("--upload", action="store_true", help="Upload immediately to distribution platforms")
+    parser.add_argument("--platforms", type=str, default="youtube", help="Comma-separated targets: youtube,tiktok,instagram")
+    parser.add_argument("--all-platforms", action="store_true", help="Publish across YouTube, TikTok, and Instagram simultaneously")
     parser.add_argument("--privacy", type=str, choices=["public", "private", "unlisted"], default="public", help="Upload privacy")
     parser.add_argument("--schedule", type=str, default=None, help="RFC 3339 publish timestamp (e.g. 2026-11-15T05:00:00Z)")
     parser.add_argument("--thumb-text", type=str, default=None, help="Custom thumbnail headline text")
@@ -228,6 +240,11 @@ def main():
     if not args.topic and not args.script:
         parser.error("You must specify either --topic or --script")
 
+    if args.all_platforms:
+        target_platforms = ["youtube", "tiktok", "instagram"]
+    else:
+        target_platforms = [p.strip().lower() for p in args.platforms.split(",") if p.strip()]
+
     produce_short(
         topic=args.topic,
         script_file=args.script,
@@ -235,6 +252,7 @@ def main():
         voice_id=args.voice_id,
         music_volume=args.music_volume,
         upload=args.upload,
+        platforms=target_platforms,
         privacy=args.privacy,
         schedule=args.schedule,
         thumb_text=args.thumb_text,

@@ -18,6 +18,8 @@ import config
 from apis import images as image_apis
 
 PEXELS_SEARCH = "https://api.pexels.com/v1/search"
+PEXELS_VIDEOS_SEARCH = "https://api.pexels.com/videos/search"
+PIXABAY_VIDEOS_SEARCH = "https://pixabay.com/api/videos/"
 
 FALLBACK_QUERIES = [
     "deep space stars galaxy nebula",
@@ -73,7 +75,75 @@ def _pexels(query: str, orientation: str, count: int) -> list:
     } for p in pool]
 
 
-def _candidates(query: str, orientation: str, count: int) -> list:
+def _pexels_videos(query: str, orientation: str, count: int) -> list:
+    """Fetch free HD vertical video clips from Pexels Video API."""
+    if not _pexels_ready():
+        return []
+    try:
+        headers = {"Authorization": config.PEXELS_API_KEY}
+        params = {"query": query, "per_page": min(max(count * 3, 10), 30), "orientation": orientation}
+        r = requests.get(PEXELS_VIDEOS_SEARCH, headers=headers, params=params, timeout=15)
+        if not r.ok:
+            return []
+        videos = r.json().get("videos", [])
+        candidates = []
+        for v in videos:
+            vfiles = v.get("video_files", [])
+            hd_files = [f for f in vfiles if f.get("width") and f.get("height") and f.get("link")]
+            if not hd_files:
+                continue
+            hd_files.sort(key=lambda f: f.get("width", 0) * f.get("height", 0), reverse=True)
+            chosen = hd_files[0]
+            candidates.append({
+                "url": chosen["link"],
+                "is_video": True,
+                "credit": {"source": "Pexels Video", "author": v.get("user", {}).get("name", "Pexels Creator"),
+                           "license": "Pexels License", "link": v.get("url", "")}
+            })
+        if candidates:
+            random.shuffle(candidates)
+        return candidates[:count]
+    except Exception as e:
+        return []
+
+
+def _pixabay_videos(query: str, count: int) -> list:
+    """Fetch free vertical video clips from Pixabay Videos API."""
+    key = getattr(config, "PIXABAY_API_KEY", "")
+    if not key:
+        return []
+    try:
+        clean_words = [w for w in re.findall(r"\w+", query) if len(w) > 2]
+        q_clean = " ".join(clean_words[:3]) if clean_words else query[:40]
+        params = {"key": key, "q": q_clean, "video_type": "film", "per_page": max(10, count * 3)}
+        r = requests.get(PIXABAY_VIDEOS_SEARCH, params=params, timeout=15)
+        if not r.ok:
+            return []
+        hits = r.json().get("hits", [])
+        candidates = []
+        for h in hits:
+            vdata = h.get("videos", {})
+            vobj = vdata.get("large") or vdata.get("medium") or vdata.get("small")
+            if vobj and vobj.get("url"):
+                candidates.append({
+                    "url": vobj["url"],
+                    "is_video": True,
+                    "credit": {"source": "Pixabay Video", "author": h.get("user", "Pixabay Creator"),
+                               "license": "Pixabay Content License", "link": h.get("pageURL", "")}
+                })
+        if candidates:
+            random.shuffle(candidates)
+        return candidates[:count]
+    except Exception as e:
+        return []
+
+
+def _candidates(query: str, orientation: str, count: int, allow_video: bool = True) -> list:
+    if allow_video and orientation == "portrait":
+        vids = _pexels_videos(query, orientation, count) or _pixabay_videos(query, count)
+        c = [x for x in vids if x["url"] not in _used_urls]
+        if c:
+            return c
     if _pexels_ready():
         try:
             c = [x for x in _pexels(query, orientation, count) if x["url"] not in _used_urls]
@@ -105,7 +175,10 @@ def _fetch_images(query: str, section_index: int, images_dir: str,
         if needed <= 0:
             break
         for cand in _candidates(attempt_query, orientation, needed):
-            fname = f"section_{section_index:02d}_img{img_num_start + len(saved) + 1:02d}.jpg"
+            is_vid = bool(cand.get("is_video"))
+            ext = ".mp4" if is_vid else ".jpg"
+            prefix = "broll" if is_vid else "img"
+            fname = f"section_{section_index:02d}_{prefix}{img_num_start + len(saved) + 1:02d}{ext}"
             path = os.path.join(images_dir, fname)
             if image_apis.fetch(cand, path):
                 saved.append(path)
@@ -132,7 +205,7 @@ def download_images(script: dict, output_dir: str) -> dict:
     images_dir = os.path.join(output_dir, "images")
     os.makedirs(images_dir, exist_ok=True)
     # Clear the previous run's images so stale B-roll never leaks into this video
-    for old in glob.glob(os.path.join(images_dir, "section_*.jpg")):
+    for old in glob.glob(os.path.join(images_dir, "section_*.*")):
         try:
             os.remove(old)
         except OSError:

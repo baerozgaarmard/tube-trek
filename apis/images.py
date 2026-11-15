@@ -165,7 +165,7 @@ def fetch(candidate: dict, path: str) -> bool:
         try:
             r = get(url, timeout=candidate.get("timeout", 30), stream=True)
             ctype = r.headers.get("Content-Type", "")
-            if "image" not in ctype and "octet-stream" not in ctype:
+            if "image" not in ctype and "octet-stream" not in ctype and "video" not in ctype and "mp4" not in ctype:
                 continue
             with open(path, "wb") as f:
                 for chunk in r.iter_content(8192):

@@ -119,21 +119,12 @@ def _build_music_clip(tracks: list[str], target_duration: float):
 def mix_music_with_narration(narration_path: str,
                               output_path: str,
                               music_volume: float = 0.12,
-                              library_dir: str = "") -> str:
+                              library_dir: str = "",
+                              job_dir: str = "",
+                              cut_timestamps: list = None,
+                              enable_sfx: bool = True) -> str:
     """
-    Mix background music from the local library under the narration audio.
-
-    Parameters
-    ----------
-    narration_path : path to the narration MP3 produced by narrator.py
-    output_path    : where to write the mixed MP3
-    music_volume   : 0.0–1.0  (0.12 = 12% — subtle; 0.25 = noticeable)
-    library_dir    : absolute path to the  music library/  folder
-
-    Returns
-    -------
-    output_path if mixing succeeded, narration_path if it failed (so the
-    pipeline always has a valid audio file to use).
+    Mix background music and procedural micro-SFX (whoosh, sub-drop) under narration.
     """
     import shutil
     from moviepy.editor import AudioFileClip, CompositeAudioClip
@@ -142,10 +133,33 @@ def mix_music_with_narration(narration_path: str,
     narr          = AudioFileClip(narration_path)
     target_dur    = narr.duration
 
+    # ── Generate & Load Procedural SFX ───────────────────────
+    sfx_clips = []
+    if enable_sfx and (job_dir or output_path):
+        target_dir = job_dir or os.path.dirname(os.path.abspath(output_path))
+        try:
+            from video.sfx import build_sfx_tracks
+            sfx_clips = build_sfx_tracks(target_dir, cut_timestamps=cut_timestamps)
+            if sfx_clips:
+                print(f"   → Mixed {len(sfx_clips)} procedural micro-SFX cues (whoosh + sub-drop)")
+        except Exception as e:
+            print(f"   ⚠ SFX build notice: {e}")
+
     # ── Scan library ─────────────────────────────────────────
     tracks = _get_library_tracks(library_dir)
     if not tracks:
-        print("   → No music tracks available — using narration only")
+        print("   → No music tracks available — using narration + SFX")
+        if sfx_clips:
+            try:
+                CompositeAudioClip([narr] + sfx_clips).write_audiofile(
+                    output_path, fps=44100, verbose=False, logger=None
+                )
+                narr.close()
+                for c in sfx_clips:
+                    c.close()
+                return output_path
+            except Exception:
+                pass
         narr.close()
         shutil.copy2(narration_path, output_path)
         return output_path
@@ -170,14 +184,17 @@ def mix_music_with_narration(narration_path: str,
 
     # ── Composite and write ──────────────────────────────────
     try:
-        CompositeAudioClip([narr, music]).write_audiofile(
+        mix_layers = [narr, music] + sfx_clips
+        CompositeAudioClip(mix_layers).write_audiofile(
             output_path, fps=44100, verbose=False, logger=None,
         )
         narr.close()
         music.close()
+        for c in sfx_clips:
+            c.close()
         size_kb = os.path.getsize(output_path) // 1024
         print(f"   → Mixed audio: {size_kb} KB  "
-              f"(narration + music @ {int(music_volume * 100)}% vol, "
+              f"(narration + music @ {int(music_volume * 100)}% vol + SFX, "
               f"{target_dur:.1f}s)")
         return output_path
 
@@ -186,6 +203,8 @@ def mix_music_with_narration(narration_path: str,
         try:
             narr.close()
             music.close()
+            for c in sfx_clips:
+                c.close()
         except Exception:
             pass
         shutil.copy2(narration_path, output_path)

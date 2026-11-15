@@ -112,6 +112,44 @@ def _load_bg_image(path: str) -> np.ndarray | None:
     return np.array(img.crop((left, top, left + W, top + H)), dtype=np.uint8)
 
 
+def _load_broll_shot(path: str):
+    """Load either a video clip or cover-resized image array."""
+    if not path or not os.path.exists(path):
+        return None
+    if path.lower().endswith((".mp4", ".mov", ".mkv", ".webm")):
+        try:
+            from moviepy.editor import VideoFileClip
+            vclip = VideoFileClip(path)
+            return {"type": "video", "clip": vclip, "path": path}
+        except Exception as e:
+            print(f"   ⚠ VideoFileClip fallback: {e}")
+    arr = _load_bg_image(path)
+    if arr is not None:
+        return {"type": "image", "array": arr, "path": path}
+    return None
+
+
+def _get_shot_frame(shot, t_shot: float, idx: int, slot_dur: float) -> np.ndarray:
+    """Extract a frame from either a video clip or zoom-pulsed static image."""
+    if isinstance(shot, dict) and shot.get("type") == "video":
+        vclip = shot["clip"]
+        v_t = t_shot % max(vclip.duration, 0.1)
+        raw = vclip.get_frame(v_t)
+        fh, fw = raw.shape[:2]
+        if fw != W or fh != H:
+            scale = max(W / fw, H / fh)
+            nw, nh = int(fw * scale), int(fh * scale)
+            img = Image.fromarray(raw).resize((nw, nh), Image.LANCZOS)
+            left = (nw - W) // 2
+            top = (nh - H) // 2
+            return np.array(img.crop((left, top, left + W, top + H)), dtype=np.uint8)
+        return raw
+    elif isinstance(shot, dict) and shot.get("type") == "image":
+        return _zoom_pulse(shot["array"], t_shot, idx, slot_dur)
+    else:
+        return _zoom_pulse(shot, t_shot, idx, slot_dur)
+
+
 def _apply_overlay(arr: np.ndarray, opacity: float = None) -> np.ndarray:
     op = opacity if opacity is not None else config.OVERLAY_OPACITY
     return (arr * (1 - op)).astype(np.uint8)
@@ -425,7 +463,7 @@ def _build_shorts_clip(all_images: list, total_duration: float,
             cur_slot_start = cur_idx * slot_dur
             cur_kb_t  = t - cur_slot_start
 
-            cur_frame = _zoom_pulse(all_images[cur_idx], cur_kb_t, cur_idx, slot_dur)
+            cur_frame = _get_shot_frame(all_images[cur_idx], cur_kb_t, cur_idx, slot_dur)
             cur_frame = _apply_overlay(cur_frame, opacity=0.36)
             cur_frame = _apply_vignette(cur_frame)
 
@@ -437,7 +475,7 @@ def _build_shorts_clip(all_images: list, total_duration: float,
                 next_idx        = cur_idx + 1
                 next_slot_start = (cur_idx + 1) * slot_dur
                 next_kb_t       = max(0.0, t - next_slot_start)
-                nxt_frame       = _zoom_pulse(all_images[next_idx], next_kb_t, next_idx, slot_dur)
+                nxt_frame       = _get_shot_frame(all_images[next_idx], next_kb_t, next_idx, slot_dur)
                 nxt_frame       = _apply_overlay(nxt_frame, opacity=0.36)
                 nxt_frame       = _apply_vignette(nxt_frame)
 
@@ -563,7 +601,7 @@ def create_video(script: dict, audio_path: str, output_dir: str,
         if isinstance(paths, str):
             paths = [paths]
         for p in paths:
-            arr = _load_bg_image(p)
+            arr = _load_broll_shot(p)
             if arr is not None:
                 all_images.append(arr)
 
@@ -591,7 +629,8 @@ def create_video(script: dict, audio_path: str, output_dir: str,
         except Exception as e:
             print(f"   (!) Word timings fallback to SRT ({e})")
 
-    print(f"   -> {len(all_images)} images loaded for fast rhythmic cuts")
+    v_count = sum(1 for s in all_images if isinstance(s, dict) and s.get("type") == "video")
+    print(f"   -> {len(all_images)} shots loaded ({v_count} motion videos, {len(all_images)-v_count} photos) for fast rhythmic cuts")
 
     # Attach audio first to know true duration
     audio     = AudioFileClip(audio_path)
@@ -623,6 +662,13 @@ def create_video(script: dict, audio_path: str, output_dir: str,
         verbose=False,
         logger=None,
     )
+
+    for s in all_images:
+        if isinstance(s, dict) and s.get("type") == "video":
+            try:
+                s["clip"].close()
+            except Exception:
+                pass
 
     size_mb = os.path.getsize(output_path) // (1024 * 1024)
     print(f"\n   [+] Short rendered: {output_path} ({size_mb} MB)")

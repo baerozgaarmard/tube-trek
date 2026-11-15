@@ -233,12 +233,15 @@ python make_short.py --script script.json
 # 2. Render and publish directly to YouTube:
 python make_short.py --script script.json --upload
 
-# 3. ElevenLabs voice + scheduled release:
+# 3. Publish across YouTube, TikTok, and Instagram simultaneously:
+python make_short.py --script script.json --upload --all-platforms
+
+# 4. ElevenLabs voice + scheduled release:
 python make_short.py \
   --script script.json \
   --voice elevenlabs --upload --schedule "2026-11-16T12:00:00Z"
 
-# 4. Instant standalone render from topic (uses built-in viral template):
+# 5. Instant standalone render from topic (uses built-in viral template):
 python make_short.py --topic "Why Paper Cuts Hurt More Than A Knife"
 ```
 
@@ -251,7 +254,9 @@ python make_short.py --topic "Why Paper Cuts Hurt More Than A Knife"
 | `--topic` | Topic title (uses built-in high-retention template) | — |
 | `--voice` | Voice engine: `edge-tts` (free) or `elevenlabs` | `edge-tts` |
 | `--music-volume` | Background music volume level | `0.14` |
-| `--upload` | Publish to YouTube via Data API v3 | `false` |
+| `--upload` | Publish to distribution platforms | `false` |
+| `--platforms` | Comma-separated targets: `youtube,tiktok,instagram` | `youtube` |
+| `--all-platforms` | Syndicate to YouTube, TikTok, and Instagram simultaneously | `false` |
 | `--privacy` | `public` · `private` · `unlisted` | `public` |
 | `--schedule` | RFC 3339 timestamp for future release | — |
 | `--thumb-text` | Custom thumbnail headline text | — |
@@ -270,6 +275,9 @@ python make_short.py --topic "Why Paper Cuts Hurt More Than A Knife"
 </tr>
 <tr><td><b>Cost & Setup</b></td><td>❌ Requires paid LLM API keys & web login</td><td>✅ <b>100% Free · Zero API Keys Needed</b></td></tr>
 <tr><td><b>Workflow</b></td><td>❌ Click buttons in browser dashboard</td><td>✅ <b>One prompt to your AI coding agent</b></td></tr>
+<tr><td><b>Visual Fidelity</b></td><td>❌ Static image pans only</td><td>✅ <b>Motion B-Roll (HD MP4 loops) + Ken Burns</b></td></tr>
+<tr><td><b>Sound Design</b></td><td>❌ Plain background music</td><td>✅ <b>Procedural Micro-SFX (Whoosh, Pop, Sub-Drop)</b></td></tr>
+<tr><td><b>Distribution</b></td><td>❌ Single platform upload</td><td>✅ <b>Tri-Platform Syndication (YouTube, TikTok, Instagram)</b></td></tr>
 <tr><td><b>Duration Control</b></td><td>❌ Unpredictable 45s–90s</td><td>✅ <b>Strictly 30–33s</b> (High APV)</td></tr>
 <tr><td><b>Visual Looping</b></td><td>❌ Same 3–4 images repeat</td><td>✅ <b>Zero-loop — 100% unique shots</b></td></tr>
 <tr><td><b>Kinetic Captions</b></td><td>❌ Static centered text blocks</td><td>✅ <b>3-word amber pop window</b></td></tr>
