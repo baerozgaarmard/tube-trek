@@ -36,6 +36,7 @@ output/images/
 *.jpg
 *.jpeg
 *.png
+!assets/avatars/*.png
 # ── OS junk ──────────────────────────────
 .DS_Store
 Thumbs.db
