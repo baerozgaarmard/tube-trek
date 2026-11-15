@@ -1,11 +1,11 @@
-"""Description builder, credits, watermark, config and model-chain behaviour."""
+"""Core pipeline, description builder, watermark, config and model-chain behaviour."""
 import numpy as np
 import pytest
 
 import config
-import gui
 from agents import gemini_client
 from video import creator, stock
+from uploader.youtube import build_description
 
 SCRIPT = {
     "title": "What If the Moon Disappeared?",
@@ -21,36 +21,17 @@ RESEARCH = {
 }
 
 
-@pytest.fixture(autouse=True)
-def _no_credits_file(monkeypatch):
-    monkeypatch.setattr(gui, "_load_credits", lambda: [])
+def test_description_has_content_and_tags():
+    d = build_description(SCRIPT)
+    assert "A thought experiment about our Moon." in d
+    assert "#moon #space #physics" in d
 
 
-def test_description_has_chapters_sources_and_credit(monkeypatch):
-    monkeypatch.setattr(config, "CREDIT_YAAS", True, raising=False)
-    d = gui._build_description(SCRIPT, RESEARCH, "normal")
-    assert "⏱ CHAPTERS" in d and "\n0:00 Part 1" in d
-    assert "https://en.wikipedia.org/wiki/Moon" in d
-    assert d.rstrip().endswith("#moon #space #physics")     # hashtags stay last
-    assert len(d) <= 4900
-
-
-def test_shorts_description_has_no_chapters():
-    d = gui._build_description({**SCRIPT, "video_type": "shorts"}, RESEARCH, "shorts")
-    assert "CHAPTERS" not in d
-    assert "#Shorts" in d
-
-
-def test_credit_can_be_turned_off(monkeypatch):
-    monkeypatch.setattr(config, "CREDIT_YAAS", False, raising=False)
-    assert "Tube Trek" not in gui._build_description(SCRIPT, RESEARCH, "normal")
-
-
-def test_old_descriptions_get_the_credit(monkeypatch):
-    monkeypatch.setattr(config, "CREDIT_YAAS", True, raising=False)
-    assert gui._with_credit("Old text").endswith(gui.CREDIT_LINE)
-    already = "x\n" + gui.CREDIT_LINE
-    assert gui._with_credit(already) == already
+def test_credit_can_be_toggled(monkeypatch):
+    monkeypatch.setattr(config, "CREDIT_TUBE_TREK", True, raising=False)
+    assert "Tube Trek" in build_description(SCRIPT)
+    monkeypatch.setattr(config, "CREDIT_TUBE_TREK", False, raising=False)
+    assert "Tube Trek" not in build_description(SCRIPT)
 
 
 @pytest.mark.parametrize("w, h", [(1920, 1080), (1080, 1920)])
@@ -72,9 +53,8 @@ def test_watermark_is_burned_into_frames():
     assert out.shape == frame.shape
 
 
-def test_watermark_text_is_not_a_setting():
+def test_watermark_text_is_default_empty():
     assert creator.WATERMARK_TEXT == ""
-    assert not any("WATERMARK" in k for k, _ in gui._SETTINGS.values())
 
 
 def test_save_env_updates_in_place(tmp_path):
@@ -85,12 +65,6 @@ def test_save_env_updates_in_place(tmp_path):
     assert "# my keys" in text and "OTHER=keep" in text
     assert "GEMINI_API_KEY=new" in text and "GEMINI_API_KEY=old" not in text
     assert "PEXELS_API_KEY=p" in text
-
-
-def test_keys_are_masked_for_the_browser():
-    assert gui._mask("") == ""
-    assert gui._mask("YOUR_GEMINI_API_KEY") == ""
-    assert gui._mask("abcdefghijkl") == "••••ijkl"
 
 
 def test_model_chain_starts_at_preference():

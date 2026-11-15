@@ -27,7 +27,7 @@ _ALL_MODELS = [
     "gemini-1.5-pro-001",
 ]
 
-# Which provider answered the last call ? shown in the GUI
+# Which provider answered the last call
 last_provider = "Groq / OpenRouter"
 
 

@@ -1,9 +1,8 @@
 import os
 
 # ─────────────────────────────────────────────────────────────────────────────
-#  YAAS — youtube-agentic-ai-studio · Configuration
-#  API keys live in .env (git-ignored) — copy .env.example to .env, or paste
-#  them into the GUI's Settings page, which writes .env for you.
+#  Tube Trek — Autonomous Agentic AI Video Pipeline · Configuration
+#  API keys live in .env (git-ignored) — copy .env.example to .env
 #  All settings are documented. Change only what you need.
 # ─────────────────────────────────────────────────────────────────────────────
 
@@ -55,7 +54,7 @@ OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY", "")   # openrouter.ai — f
 YOUTUBE_API_KEY    = os.getenv("YOUTUBE_API_KEY",    "")   # console.cloud.google.com — channel stats
 YOUTUBE_CHANNEL_ID = os.getenv("YOUTUBE_CHANNEL_ID", "")   # UC… id or @handle
 
-# Settings the GUI stores in .env rather than in this file
+# Settings stored in .env rather than in this file
 ENV_KEYS = [
     "GEMINI_API_KEY", "PEXELS_API_KEY", "PIXABAY_API_KEY", "GROQ_API_KEY",
     "OPENROUTER_API_KEY", "ELEVENLABS_API_KEY", "VOICE_ENGINE", "ELEVENLABS_VOICE_ID", "YOUTUBE_API_KEY", "YOUTUBE_CHANNEL_ID",
@@ -104,7 +103,7 @@ BRAND_TEXT         = ''
 THUMB_STYLE        = 'impact'
 
 # Adds credit line to video descriptions
-CREDIT_YAAS        = False
+CREDIT_TUBE_TREK   = False
 
 
 def brand_text() -> str:
@@ -132,7 +131,7 @@ VOICE_PITCH = '-3Hz'    # slightly deeper = more cinematic
 #  AI Model
 #  Starting model for the fallback chain — the system auto-switches
 #  through all models below if quota or errors are hit.
-#  Change this in the GUI under Settings → AI Model, or here directly.
+#  Change this via GEMINI_MODEL in .env, or here directly.
 #  Options (free tier):
 #    gemini-2.5-flash        — highest quality   (500 req/day)
 #    gemma-4-31b-it          — Gemma 4 31B       (500 req/day)
@@ -206,11 +205,6 @@ FONT_PATHS = {
         "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
     ],
 }
-
-# ─────────────────────────────────────────
-#  Review Server
-# ─────────────────────────────────────────
-REVIEW_PORT = 5050
 
 # ─────────────────────────────────────────
 #  YouTube Upload

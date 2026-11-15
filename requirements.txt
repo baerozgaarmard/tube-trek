@@ -1,22 +1,19 @@
-# YAAS — youtube-agentic-ai-studio (free edition)
+# Tube Trek — Autonomous Agentic AI Video Pipeline
 # IMPORTANT: Do NOT upgrade moviepy or numpy — see README for why
 
-# AI Brain — NEW SDK (replaces deprecated google-generativeai)
+# AI Brain — NEW SDK
 google-genai>=1.0.0
 
-# HTTP requests (Pexels image downloads)
+# HTTP requests (Pexels / Pixabay image downloads)
 requests>=2.31.0
 
-# Voiceover — 100% free, no API key needed
-edge-tts>=7.3.1   # older versions get 403 from Microsoft's speech service
+# Voiceover — free neural TTS
+edge-tts>=7.3.1
 
 # Video rendering — pin these exactly, they have breaking changes
 moviepy==1.0.3
 numpy>=1.24.0,<2.0.0
 Pillow>=10.0.0
-
-# Review dashboard
-flask>=3.0.0
 
 # YouTube upload
 google-api-python-client>=2.100.0

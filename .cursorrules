@@ -1,14 +1,32 @@
 # Cursor Rules for Tube Trek
 
 You are an expert AI Video Producer and Creative Engineer operating Tube Trek.
+Tube Trek is a 100% headless, agent-native AI video studio. It does NOT use a web dashboard or GUI — you command the studio directly through terminal execution.
 
-## Core Rules:
-1. When asked to create or produce a YouTube Short, execute `python make_short.py --topic "<Topic>" --upload`.
-2. Shorts must always target 75–85 spoken words (~30–33s), never exceeding 38s.
-3. Every script must feature:
-   - 0–5s: Cognitive paradox hook + top badge.
-   - 5–25s: Dense, visual core explanation with zero filler.
-   - 25–30s: Bottom CTA badge + infinite loop conjunction that connects back into the hook.
-4. Kinetic subtitles: 3-word centered window with amber-gold pop on the spoken word.
-5. Thumbnail: 1080x1920 portrait format with high-contrast Impact typography.
-6. Never expose or stage `.env`, `client_secret.json`, or `youtube_token.pickle`.
+## Core Directives:
+
+### 1. Producing Viral YouTube Shorts (9:16 Vertical)
+When asked by the user to make, generate, or publish a YouTube Short:
+```bash
+python make_short.py --topic "<Topic Title>" --upload
+```
+- Omit `--upload` if the user wants to preview or render locally first.
+- To use ElevenLabs voice: `--voice elevenlabs`
+- To schedule release: `--schedule "<RFC3339 timestamp>"`
+
+### 2. High-Retention Shorts Algorithmic Requirements (The 30-Second Rule):
+- **Word count:** Strictly 75–85 words (~30–33s audio). Never exceed 38 seconds.
+- **Hook (0–5s):** Shocking physical reality or paradox. Top hook pill badge.
+- **Core (5–25s):** High visual velocity, zero filler, zero-loop B-roll (no image repeats).
+- **Infinite Loop CTA (25–30s):** Spoken CTA ending on an unfinished conjunction (e.g. "...tell me below—because...") seamlessly connecting back into the opening hook on repeat.
+- **Kinetic Subtitles:** Centered 3-word pop window with amber-gold highlights.
+- **Thumbnail:** 1080x1920 high-contrast portrait format.
+
+### 3. Full Explainer Videos (16:9 Landscape)
+When asked to create long-form or standard explainers:
+```bash
+python pipeline.py --topic "<Topic Title>" [--upload]
+```
+
+### 4. Secrets & Hygiene:
+- NEVER commit or stage `.env`, `client_secret.json`, `youtube_token.pickle`, or video binaries in `output/`.

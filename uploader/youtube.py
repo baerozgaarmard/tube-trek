@@ -64,6 +64,18 @@ def _get_service():
     return build("youtube", "v3", credentials=creds)
 
 
+def build_description(script: dict) -> str:
+    """Standardized YouTube description with optional branding and tags."""
+    desc = script.get("description", "").strip()
+    parts = [desc] if desc else []
+    if getattr(config, "CREDIT_TUBE_TREK", False):
+        parts.append("Created autonomously with Tube Trek.")
+    tags = " ".join(f"#{t}" for t in script.get("tags", []))
+    if tags:
+        parts.append(tags)
+    return "\n\n".join(parts)
+
+
 def upload_to_youtube(script: dict, video_path: str, thumbnail_path: str = None, publish_at: str = None, privacy_status: str = None) -> str:
     """
     Uploads the video with auto-generated title, description, tags, and thumbnail.
@@ -72,13 +84,7 @@ def upload_to_youtube(script: dict, video_path: str, thumbnail_path: str = None,
     """
     youtube = _get_service()
 
-    description = (
-        script.get("description", "") + "\n\n"
-        + "─────────────────────────────\n"
-        + "Subscribe for new explainers every week!\n"
-        + "─────────────────────────────\n"
-        + " ".join(f"#{t}" for t in script.get("tags", []))
-    )
+    description = build_description(script)
 
     status_data = {
         "privacyStatus":            privacy_status or config.VIDEO_PRIVACY,

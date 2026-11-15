@@ -313,7 +313,7 @@ async def _synthesise(text: str, audio_path: str, srt_path: str) -> int:
             print(f"   [!] '{config.VOICE_ID}' sent no word-timing data (Microsoft server change).")
             print( "      Captions are sentence-level (timing is correct, sync is approximate).")
             if alternatives:
-                print( "      For word-synced captions, switch voice in the GUI or set in config.py:")
+                print( "      For word-synced captions, set VOICE_ID in config.py or use --voice:")
                 for voice_id, label in alternatives:
                     print(f"        {label:<28}  VOICE_ID = \"{voice_id}\"")
         print("   -> Using sentence-level caption fallback (approximate sync)...")

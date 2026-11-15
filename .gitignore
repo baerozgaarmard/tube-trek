@@ -36,9 +36,6 @@ output/images/
 *.jpg
 *.jpeg
 *.png
-# allow docs screenshots
-!docs/screenshots/*.png
-
 # ── OS junk ──────────────────────────────
 .DS_Store
 Thumbs.db

@@ -1,37 +1,37 @@
 # 🛠️ Setup Guide
 
-Complete step-by-step instructions to get YAAS (youtube-agentic-ai-studio) running from scratch.
+Complete step-by-step setup instructions for **Tube Trek — Autonomous Agentic AI Video Pipeline**.
 
-> **Time required:** ~10 minutes
+> **Time required:** ~5 minutes
 
 ---
 
 ## Prerequisites
 
-- Python **3.10 or newer** — [python.org/downloads](https://www.python.org/downloads/)
-- `ffmpeg` installed and on your PATH (see [Step 1b](#1b-install-ffmpeg))
-- A Google account (for Gemini + YouTube)
-- A Pexels account (free image API)
+- **Python 3.10 or newer** — [python.org/downloads](https://www.python.org/downloads/)
+- **FFmpeg** installed and on your PATH (see [Step 1b](#1b-install-ffmpeg))
+- A Google account (for Gemini AI + YouTube Data API)
+- A Pexels API account (free stock imagery)
 
 ---
 
-## Step 1 — Clone and install
+## Step 1 — Clone and Install
 
 ### 1a. Clone the repository
 
 ```bash
-git clone https://github.com/yourusername/youtube-ai-agent.git
-cd youtube-ai-agent
+git clone https://github.com/baerozgaarmard/tube-trek.git
+cd tube-trek
 ```
 
-### 1b. Install ffmpeg
+### 1b. Install FFmpeg
 
-ffmpeg is required by MoviePy for video rendering.
+FFmpeg is required by MoviePy for video compositing and audio mixing.
 
 | OS | Command |
 |---|---|
-| **Windows** | Download from [ffmpeg.org](https://ffmpeg.org/download.html) → extract → add `bin/` folder to PATH |
-| **Mac** | `brew install ffmpeg` |
+| **Windows** | `winget install Gyan.FFmpeg` or download from [ffmpeg.org](https://ffmpeg.org/download.html) |
+| **macOS** | `brew install ffmpeg` |
 | **Ubuntu/Debian** | `sudo apt install ffmpeg` |
 
 Verify: `ffmpeg -version` should print version info.
@@ -42,127 +42,81 @@ Verify: `ffmpeg -version` should print version info.
 pip install -r requirements.txt
 ```
 
-> ⚠️ **Do not upgrade** `moviepy` or `numpy` — they are pinned intentionally. See [FAQ in README](README.md#-faq).
+> ⚠️ **Do not upgrade** `moviepy` or `numpy` — they are pinned to ensure video compositing stability.
 
 ---
 
-## Step 2 — Get your API keys
+## Step 2 — Configure Environment & API Keys
 
-### 2a. Google Gemini API Key (required — free)
-
-1. Go to [aistudio.google.com/apikey](https://aistudio.google.com/apikey)
-2. Sign in with your Google account
-3. Click **Create API Key**
-4. Copy the key
-
-### 2b. Pexels API Key (required — free)
-
-1. Go to [pexels.com/api](https://www.pexels.com/api/)
-2. Create a free account and click **Your API Key**
-3. Copy the key
-
----
-
-## Step 3 — Add your keys
-
-All keys are optional. YAAS runs without any, but a Gemini key makes scripts much better.
-
-### Option A — In the app (easiest)
-
-Run `python gui.py`, click **Settings** (top right), paste your keys, and press **Save**.
-They're written to a local `.env` file that git ignores.
-
-### Option B — Edit `.env` yourself
+Copy the sample environment file:
 
 ```bash
 cp .env.example .env
-# open .env and fill in the keys you have
 ```
 
-Real environment variables (`export GEMINI_API_KEY=...`) also work and take priority over `.env`.
+Open `.env` and fill in your keys:
 
-> Never put keys in `config.py`. It's tracked by git, so they'd end up in your commits.
+```ini
+# Required for AI research & scriptwriting (Free at aistudio.google.com/apikey)
+GEMINI_API_KEY=your_gemini_api_key
 
----
+# Required for stock B-roll images (Free at pexels.com/api)
+PEXELS_API_KEY=your_pexels_api_key
 
-## Step 4 — Set up YouTube upload (optional)
+# Optional: Extra stock images (Free at pixabay.com/api/docs)
+PIXABAY_API_KEY=your_pixabay_api_key
 
-Skip this step if you just want to generate videos locally without uploading.
-
-### 4a. Create a Google Cloud project
-
-1. Go to [console.cloud.google.com](https://console.cloud.google.com)
-2. Click **Select a project → New Project**
-3. Name it (e.g. "YAAS") and click **Create**
-
-### 4b. Enable the YouTube Data API
-
-1. In your new project, go to **APIs & Services → Library**
-2. Search for **YouTube Data API v3**
-3. Click **Enable**
-
-### 4c. Create OAuth credentials
-
-1. Go to **APIs & Services → Credentials**
-2. Click **Create Credentials → OAuth client ID**
-3. If prompted, configure the consent screen first:
-   - User Type: **External**
-   - Fill in app name, support email, and developer email
-   - Scopes: click **Add or remove scopes** → search "youtube" → select `youtube.upload`
-   - Test users: add your own Gmail address
-4. Back in Credentials → **Create Credentials → OAuth client ID**
-   - Application type: **Desktop app**
-   - Name: anything (e.g. "YT Agent Desktop")
-5. Click **Download JSON**
-6. Rename the downloaded file to `client_secret.json`
-7. Place it in the root of the project (replacing the placeholder)
-
-### 4d. First-time authentication
-
-On your first run, a browser window will open asking you to sign in with Google and grant permission. This only happens once — the token is saved locally as `youtube_token.pickle`.
-
-> If you see a "Google hasn't verified this app" warning, click **Advanced → Go to (app name) (unsafe)**. This is expected for personal OAuth apps in testing mode.
+# Voiceover engine: "edge-tts" (100% free, default) or "elevenlabs"
+VOICE_ENGINE=edge-tts
+ELEVENLABS_API_KEY=your_elevenlabs_key_if_using_elevenlabs
+```
 
 ---
 
-## Step 5 — Customise your channel
+## Step 3 — Set Up YouTube Upload (Optional)
 
-In the app, open **Settings → Your channel** and set:
+Skip this step if you only want to generate videos locally without auto-uploading.
 
-- **Channel name**, which is shown in your videos and thumbnails (switch it off or use custom text with *Show channel name in videos*)
-- **What your channel is about**: the more specific, the better the AI's topics and scripts.
-  Example: *"Educational science channel for curious adults, style of Veritasium."*
-
-These are saved to `config.py` (`CHANNEL_NAME`, `CHANNEL_DESCRIPTION`, `SHOW_CHANNEL_BRAND`, `BRAND_TEXT`) if you prefer editing it directly.
+1. Go to [Google Cloud Console](https://console.cloud.google.com).
+2. Create a new project and enable **YouTube Data API v3**.
+3. Under **APIs & Services → Credentials**, create an **OAuth client ID** (Application type: **Desktop app**).
+4. Download the JSON, rename it to `client_secret.json`, and place it in the project root.
+5. On your first upload, a one-time Google OAuth browser consent screen will open. The authenticated token will save locally as `youtube_token.pickle`.
 
 ---
 
-## Step 6 — Launch
+## Step 4 — Running the Video Engine
 
-### GUI mode (recommended)
+Tube Trek is fully headless and designed to be commanded directly by you or any AI coding agent (Claude Code, Cursor, Antigravity, Gemini CLI):
+
+### 1. Viral YouTube Shorts (9:16 Vertical — 30 Seconds)
 
 ```bash
-python gui.py
+# Generate from topic and publish immediately:
+python make_short.py --topic "Why Paper Cuts Hurt More Than A Knife" --upload
+
+# Generate locally without uploading:
+python make_short.py --topic "What If The Moon Disappeared"
+
+# High-tier ElevenLabs voice + scheduled release:
+python make_short.py --topic "Inside A Black Hole" --voice elevenlabs --schedule "2026-11-16T12:00:00Z" --upload
 ```
 
-Opens at **http://localhost:7070**. Type a topic on Home and press **Make video**.
-
-### CLI mode
+### 2. Full Explainer Video Pipeline (16:9 Landscape)
 
 ```bash
-python pipeline.py
-```
+# Autonomous ideation, scripting, voiceover, stock B-roll, and render:
+python pipeline.py --topic "The Fermi Paradox"
 
-Runs the full pipeline in the terminal. The review dashboard opens automatically in your browser when the video is ready.
+# Run end-to-end and publish:
+python pipeline.py --topic "Quantum Computing Explained" --upload
+```
 
 ---
 
-## Step 7 — Add background music (optional)
+## Step 5 — Adding Custom Background Music
 
-Drop any `.mp3` or `.wav` files into the `music library/` folder.  
-The pipeline will automatically shuffle and loop them to match the video duration.
-
-The repo includes a few dark cinematic tracks to get you started. Replace or add to them freely.
+Drop any `.mp3` or `.wav` tracks into the `music library/` folder. Tube Trek automatically selects, loops, and mixes background music under narration with cinematic sub-bass ducking.
 
 ---
 
@@ -170,31 +124,8 @@ The repo includes a few dark cinematic tracks to get you started. Replace or add
 
 | Problem | Fix |
 |---|---|
-| `No module named 'moviepy'` | Run `pip install -r requirements.txt` again |
-| `ffmpeg not found` | Install ffmpeg and ensure it's on your PATH |
-| `RESOURCE_EXHAUSTED` / 429 | Gemini quota hit — wait until midnight Pacific or switch starting model |
-| `youtube_token.pickle` auth error | Delete the file and re-run to re-authenticate |
-| Tiny/ugly video text | Install DejaVu fonts: `sudo apt install fonts-dejavu` (Linux) |
-| Flask port already in use | Change `REVIEW_PORT` in `config.py` |
-| `client_secret.json` error | Ensure you replaced the placeholder with your real Google credentials |
-| Captions out of sync | Switch to a different `VOICE_ID` in `config.py` (see voice list in file) |
-
----
-
-## Optional: Run as a background service
-
-To keep the studio running continuously (e.g. on a home server):
-
-```bash
-# Using nohup (Linux/Mac)
-nohup python gui.py > studio.log 2>&1 &
-
-# Using screen
-screen -S yt-studio
-python gui.py
-# Detach: Ctrl+A then D
-```
-
----
-
-If you get stuck, [open an issue](https://github.com/yourusername/youtube-ai-agent/issues) with your error message and OS.
+| `No module named 'moviepy'` | Run `pip install -r requirements.txt` |
+| `ffmpeg not found` | Install FFmpeg and verify `ffmpeg -version` works in your terminal |
+| `RESOURCE_EXHAUSTED` / 429 | Gemini quota hit — Tube Trek automatically fails over to Groq/OpenRouter if configured, or retry after quota reset |
+| `youtube_token.pickle` expired | Delete `youtube_token.pickle` and rerun to trigger fresh OAuth authentication |
+| Subtitles out of sync | Ensure `VOICE_ID` uses a word-sync-compatible model (e.g. `en-US-AndrewNeural`, `en-GB-RyanNeural`) |

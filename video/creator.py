@@ -411,7 +411,7 @@ def _render_cta(draw, section, t):
 #  NORMAL VIDEO — CLIP BUILDER
 # ══════════════════════════════════════════════════════════════
 
-# B-roll timing — read from config so GUI changes take effect without restart.
+# B-roll timing — read from config dynamically.
 # Fallback literals keep creator.py working even if config is missing the attrs.
 BROLL_INTERVAL  = float(getattr(config, "BROLL_INTERVAL",  10.0))
 BROLL_XFADE_DUR = float(getattr(config, "BROLL_XFADE_DUR",  1.2))
@@ -904,7 +904,7 @@ def create_video(script: dict, audio_path: str, output_dir: str,
     _font_cache.clear()
     _vignette_cache.clear()
 
-    # Refresh B-roll constants from config each render (picks up GUI changes)
+    # Refresh B-roll constants from config each render
     global BROLL_INTERVAL, BROLL_XFADE_DUR
     BROLL_INTERVAL  = float(getattr(config, "BROLL_INTERVAL",  10.0))
     BROLL_XFADE_DUR = float(getattr(config, "BROLL_XFADE_DUR",  1.2))

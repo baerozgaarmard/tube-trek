@@ -1,8 +1,7 @@
 """
 Research Agent — uses shared Gemini client with model fallback chain.
 Banned topics are read from banned_topics.txt (one topic per line) in the
-project root. Edit that file — or use the GUI textarea — instead of changing
-Python code.
+project root. Edit that file instead of changing Python code.
 """
 import os
 import random
@@ -23,7 +22,7 @@ _BUILTIN_BANNED = [
     "Quantum Immortality",
 ]
 
-# All available focus angles — used by researcher AND exposed to the GUI
+# All available focus angles — used by researcher
 FOCUS_ANGLES = [
     "Theoretical Physics & Time Travel",
     "The Dark Forest Theory & Aliens",
@@ -108,8 +107,7 @@ def research_topic(channel_description: str,
                           prepended to channel_description and then ignored
                           because the random_angle prompt dominated.
     focus_angle         : if non-empty (and topic_override is empty), use this
-                          angle instead of picking one randomly. Allows the GUI
-                          dropdown to steer AI picks without locking the topic.
+                          angle instead of picking one randomly.
     trend_context       : optional list of headlines trending right now (Trend
                           Radar). The AI may ride one if it fits the niche.
 
@@ -193,10 +191,10 @@ Respond with ONLY a valid JSON object. No markdown fences, no explanation:
         return data
 
     # ── MODE 2: AI PICKS THE TOPIC ───────────────────────────────────────────
-    # Use focus_angle if supplied by the GUI dropdown; otherwise pick randomly.
+    # Use focus_angle if supplied; otherwise pick randomly.
     if focus_angle.strip():
         chosen_angle = focus_angle.strip()
-        print(f"   → Focus angle (GUI selected): {chosen_angle}")
+        print(f"   → Focus angle (selected): {chosen_angle}")
     else:
         chosen_angle = random.choice(FOCUS_ANGLES)
         print(f"   → Focus angle (random): {chosen_angle}")
