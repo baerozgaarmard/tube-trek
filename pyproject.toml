@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "tube-trek"
-version = "2.0.0"
+version = "2.1.0"
 description = "Autonomous Agent-Native YouTube Shorts Studio · 100% Free · Zero API Keys"
 readme = "README.md"
 requires-python = ">=3.10"
