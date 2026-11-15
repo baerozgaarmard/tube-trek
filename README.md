@@ -199,7 +199,6 @@ cp .env.example .env
 ```
 
 ```ini
-GEMINI_API_KEY=your_key             # Google AI Studio
 PIXABAY_API_KEY=your_key            # Stock imagery
 PEXELS_API_KEY=your_key
 VOICE_ENGINE=edge-tts               # or "elevenlabs"

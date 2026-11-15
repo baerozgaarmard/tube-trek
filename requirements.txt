@@ -1,9 +1,6 @@
 # Tube Trek — Autonomous Agentic AI Video Pipeline
 # IMPORTANT: Do NOT upgrade moviepy or numpy — see README for why
 
-# AI Brain — NEW SDK
-google-genai>=1.0.0
-
 # HTTP requests (Pexels / Pixabay image downloads)
 requests>=2.31.0
 

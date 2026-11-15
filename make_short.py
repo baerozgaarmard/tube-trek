@@ -41,71 +41,25 @@ def draft_viral_script(topic: str) -> dict:
     """
     Generate an 80-85 word high-retention 3-section script.
     Follows the 30-second cognitive dissonance framework with an infinite replay loop.
+    No external API keys required — deterministic template fallback.
+    For custom scripts, your AI coding agent drafts script.json directly.
     """
-    print(f"[*] Drafting viral script for: {topic}...")
-    
-    # Try using Gemini/Groq if API key is present
-    try:
-        from agents.scriptwriter import generate_with_ai
-        prompt = f"""Write a viral 30-second YouTube Short script about: "{topic}".
-Target: High retention, scientific curiosity, mind-bending reality check.
-
-STRICT FORMAT REQUIREMENTS:
-1. Total spoken length: EXACTLY 75-85 words (~30 seconds spoken).
-2. Hook (0-5s): Shocking fact or paradox in the first sentence.
-3. Content (5-25s): The scientific or logical explanation. Zero filler.
-4. CTA & Infinite Loop (25-30s): Spoken CTA ending on an unfinished conjunction (e.g., "...tell me below—because...") that seamlessly connects back to the very first word of the hook on replay!
-
-Return ONLY valid JSON matching this schema:
-{{
-  "title": "{topic}",
-  "description": "Short engaging description with #Shorts #Science tags",
-  "tags": ["Shorts", "Science", "Viral"],
-  "video_type": "shorts",
-  "hook_badge": "SHOCKING TRUTH",
-  "end_badge": "SUBSCRIBE FOR DAILY TRUTH",
-  "sections": [
-    {{
-      "id": 1,
-      "section_type": "hook",
-      "title": "hook",
-      "narration": "First 15-20 words hook...",
-      "image_query": "keyword1",
-      "image_query_2": "keyword2",
-      "duration_seconds": 5
-    }},
-    {{
-      "id": 2,
-      "section_type": "content",
-      "title": "content",
-      "narration": "Core explanation around 45 words...",
-      "image_query": "keyword3",
-      "image_query_2": "keyword4",
-      "duration_seconds": 18
-    }},
-    {{
-      "id": 3,
-      "section_type": "cta",
-      "title": "cta",
-      "narration": "Final 15 words ending on an unfinished loop conjunction like 'and tell me below—because...'",
-      "image_query": "keyword5",
-      "image_query_2": "keyword6",
-      "duration_seconds": 6
-    }}
-  ]
-}}"""
-        res = generate_with_ai(prompt)
-        # Parse JSON from response
-        match = re.search(r"\{.*\}", res, re.DOTALL)
-        if match:
-            script_data = json.loads(match.group(0))
-            if "sections" in script_data and len(script_data["sections"]) >= 2:
-                return script_data
-    except Exception as e:
-        print(f"   [!] AI generation fallback ({e}). Using deterministic template...")
-
-    # Robust deterministic fallback
     clean_topic = topic.strip()
+    slug = slugify(clean_topic)
+
+    # Check if a script.json was already generated in the current or job dir
+    for candidate in [f"{slug}/script.json", os.path.join(config.OUTPUT_DIR, slug, "script.json"), "script.json"]:
+        if os.path.exists(candidate):
+            try:
+                with open(candidate, "r", encoding="utf-8") as f:
+                    data = json.load(f)
+                    if "sections" in data and len(data["sections"]) >= 2:
+                        print(f"[*] Loaded agent-authored script from: {candidate}")
+                        return data
+            except Exception:
+                pass
+
+    print(f"[*] Synthesizing high-retention 30s template for: {clean_topic}...")
     return {
         "title": clean_topic,
         "description": f"The mind-bending truth behind {clean_topic}. Subscribe for daily scientific reality checks!\n\n#Science #Shorts #Physics #Curiosity",

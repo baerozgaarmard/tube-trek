@@ -1,62 +1,95 @@
 # Tube Trek — Agent Architecture & Operational Manual
 
-> **Tube Trek** is an autonomous agentic video production studio engineered for high-retention vertical YouTube Shorts (9:16) and long-form visual explainers.
+> **Tube Trek** is a 100% headless, agent-native AI video studio engineered exclusively for viral YouTube Shorts (9:16 vertical).
+> **Zero LLM API Keys Required:** As an AI coding agent, **YOU** are the scriptwriter and hook architect. Do not call external LLM APIs (Gemini/Groq/etc.) — you draft the high-retention script JSON directly!
 
 ---
 
-## ⚡ Primary Agent Command
+## ⚡ Primary Agent Workflow
 
-When instructed to create, render, or publish a Short, run:
+When the user asks you to create, render, or publish a YouTube Short about `<Topic>`:
 
-```bash
-# 1. Automatic Topic Generation + Full Render + Immediate YouTube Upload:
-python make_short.py --topic "<Topic Title>" --upload
+### Step 1: Draft the Viral Script JSON
+Write a clean `script.json` following the **30-Second Algorithmic Framework**:
+- **Spoken length:** Strictly **75–85 words** (~30–33 seconds audio).
+- **0–5s Hook:** Shocking physical reality or paradox. Top hook pill badge.
+- **5–25s Core:** High visual velocity, zero filler.
+- **25–30s Infinite Loop CTA:** Spoken CTA ending on an unfinished conjunction (e.g. *"...tell me below—because..."*) that seamlessly loops back into the opening hook on repeat!
 
-# 2. Render from pre-drafted script:
-python make_short.py --script path/to/script.json --upload
-
-# 3. Schedule for future release:
-python make_short.py --topic "<Topic Title>" --upload --schedule "2026-11-15T05:00:00Z"
+**Schema (`script.json`):**
+```json
+{
+  "title": "<Topic Title>",
+  "description": "Engaging description with #Shorts #Science tags",
+  "tags": ["Shorts", "Science", "Viral", "MindBlown"],
+  "video_type": "shorts",
+  "hook_badge": "SHOCKING TRUTH",
+  "end_badge": "SUBSCRIBE FOR DAILY TRUTH",
+  "sections": [
+    {
+      "id": 1,
+      "section_type": "hook",
+      "title": "hook",
+      "narration": "First 15-20 words hook...",
+      "image_query": "keyword1",
+      "image_query_2": "keyword2",
+      "duration_seconds": 5
+    },
+    {
+      "id": 2,
+      "section_type": "content",
+      "title": "content",
+      "narration": "Core explanation around 45 words...",
+      "image_query": "keyword3",
+      "image_query_2": "keyword4",
+      "duration_seconds": 18
+    },
+    {
+      "id": 3,
+      "section_type": "cta",
+      "title": "cta",
+      "narration": "Final 15 words ending on an unfinished loop conjunction like 'and tell me below—because...'",
+      "image_query": "keyword5",
+      "image_query_2": "keyword6",
+      "duration_seconds": 7
+    }
+  ]
+}
 ```
 
----
+### Step 2: Execute the Production Command
+```bash
+# 1. Render and upload immediately to YouTube:
+python make_short.py --script script.json --upload
 
-## 🎬 Viral Shorts Engineering Principles (The 30-Second Rule)
+# 2. Render locally without uploading:
+python make_short.py --script script.json
 
-Every vertical Short must adhere strictly to the **High-Retention Algorithmic Framework**:
+# 3. ElevenLabs voice + scheduled release:
+python make_short.py --script script.json --voice elevenlabs --schedule "2026-11-16T12:00:00Z" --upload
+```
 
-1. **Word Count & Duration:**
-   - **Target:** Exactly **75–85 spoken words** (~30–33 seconds duration).
-   - *Why:* Anything over 45s incurs severe swipe-away penalty. 30s maximizes completion rate and triggers >100% Average Percentage Viewed (APV).
-2. **The 2-Second Cognitive Hook (0–5s):**
-   - Must present a paradox, shocking physical reality, or counter-intuitive fact.
-   - Display top hook pill badge (e.g., `MICROSCOPIC CHAINSAW`, `REALITY CHECK`).
-3. **Core Explanation (5–25s):**
-   - Zero filler or generic greeting. High visual velocity.
-   - Dynamic zero-loop B-roll: every image displays once, transitioning smoothly without ever repeating.
-4. **Infinite Audio Loop CTA (25–30s):**
-   - Bottom conversion badge: `HAPPENED TO YOU? | SUBSCRIBE`.
-   - The final narration must end on an unfinished conjunction (e.g., *"...tell me below—because..."*) so when the player loops back to the start, the sentence completes seamlessly into the opening hook.
+*(Note: If `--script` is omitted, `make_short.py --topic "<Topic>"` uses an internal deterministic template, but custom agent-authored scripts are always preferred.)*
 
 ---
 
-## 🛠️ Stack & Subsystems
+## 🛠️ Compositor & Media Subsystems
 
-- **Compositor:** MoviePy + FFmpeg (`libx264`, 1080×1920, 30 FPS).
-- **Subtitles:** Centered 3-word kinetic subtitles with amber-gold pop on the active spoken word.
+- **Compositor:** MoviePy + FFmpeg (1080×1920 vertical canvas, 30 FPS, `libx264`).
+- **Kinetic Subtitles:** Centered 3-word popping window with amber-gold highlights on spoken words.
 - **Voiceover Engines:**
-  - `elevenlabs` (Default cinematic: George `JBFqnCBsd6RMkjVDRZzb` or Alice).
-  - `edge-tts` (100% free fallback: `en-US-AndrewNeural`, `en-GB-RyanNeural`).
-- **Sound Design:** Cinematic sub-bass bed (`dark_cosmos_pulse.wav`) dynamically ducked to **14% volume** beneath speech.
-- **Stock Sourcing:** Pixabay, Openverse, NASA Public Archive, Pexels.
-- **Publishing:** Resumable chunked upload with Windows IPv4 monkey-patch and 5-retry connection fault tolerance.
+  - `edge-tts` (100% free neural TTS: `en-US-AndrewNeural`, `en-GB-RyanNeural`).
+  - `elevenlabs` (Optional cinematic voiceover).
+- **Sound Design:** Tension sub-bass bed (`dark_cosmos_pulse.wav`) dynamically ducked to **14% volume** beneath speech.
+- **Stock Sourcing:** Pexels, Pixabay, Openverse, NASA Public Archive (Zero-loop: every image appears once).
+- **Publishing:** YouTube Data API v3 with Windows IPv4 monkey-patch and 5-retry resumable chunk uploads.
 
 ---
 
-## 🔒 Security & Secrets Hygiene
+## 🔒 Secrets Hygiene
 
 - **NEVER** commit or stage:
   - `.env`
   - `client_secret.json`
   - `youtube_token.pickle`
-  - `output/` video artifacts or binaries.
+  - `output/` video binaries.

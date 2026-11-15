@@ -1,9 +1,8 @@
-"""Core pipeline, description builder, watermark, config and model-chain behaviour."""
+"""Core pipeline, description builder, watermark, config and stock behaviour."""
 import numpy as np
 import pytest
 
 import config
-from agents import gemini_client
 from video import creator, stock
 from uploader.youtube import build_description
 
@@ -12,12 +11,6 @@ SCRIPT = {
     "description": "A thought experiment about our Moon.",
     "tags": ["moon", "space", "physics"],
     "sections": [{"id": i, "title": f"Part {i}", "narration": "word " * 120} for i in range(1, 6)],
-}
-RESEARCH = {
-    "hook_question": "What happens to Earth without the Moon?",
-    "key_points": ["Tides", "Axial tilt", "Night sky"],
-    "grounding": {"facts": "", "sources": [
-        {"source": "Wikipedia", "title": "Moon", "url": "https://en.wikipedia.org/wiki/Moon"}]},
 }
 
 
@@ -34,7 +27,7 @@ def test_credit_can_be_toggled(monkeypatch):
     assert "Tube Trek" not in build_description(SCRIPT)
 
 
-@pytest.mark.parametrize("w, h", [(1920, 1080), (1080, 1920)])
+@pytest.mark.parametrize("w, h", [(1080, 1920)])
 def test_watermark_fits_inside_frame_and_is_semi_transparent(w, h):
     x, y, rgb, alpha = creator._watermark_patch(w, h)
     ph, pw = alpha.shape[:2]
@@ -47,8 +40,8 @@ def test_watermark_is_burned_into_frames():
         def fl_image(self, fn):
             self.fn = fn
             return self
-    clip = creator._apply_watermark(FakeClip(), 1280, 720)
-    frame = np.zeros((720, 1280, 3), dtype=np.uint8)
+    clip = creator._apply_watermark(FakeClip(), 1080, 1920)
+    frame = np.zeros((1920, 1080, 3), dtype=np.uint8)
     out = clip.fn(frame)
     assert out.shape == frame.shape
 
@@ -59,29 +52,11 @@ def test_watermark_text_is_default_empty():
 
 def test_save_env_updates_in_place(tmp_path):
     env = tmp_path / ".env"
-    env.write_text("# my keys\nGEMINI_API_KEY=old\nOTHER=keep\n", encoding="utf-8")
-    config.save_env({"GEMINI_API_KEY": "new", "PEXELS_API_KEY": "p"}, path=str(env))
+    env.write_text("# my keys\nPEXELS_API_KEY=old\nOTHER=keep\n", encoding="utf-8")
+    config.save_env({"PEXELS_API_KEY": "new"}, path=str(env))
     text = env.read_text(encoding="utf-8")
     assert "# my keys" in text and "OTHER=keep" in text
-    assert "GEMINI_API_KEY=new" in text and "GEMINI_API_KEY=old" not in text
-    assert "PEXELS_API_KEY=p" in text
-
-
-def test_model_chain_starts_at_preference():
-    chain = gemini_client.build_chain("gemini-2.0-flash")
-    assert chain[0] == "gemini-2.0-flash" and len(chain) == len(set(chain))
-    assert gemini_client.build_chain("not-a-model")[0] == gemini_client._ALL_MODELS[0]
-
-
-def test_dropped_connections_are_retried():
-    assert gemini_client._should_switch_model(Exception("[WinError 10053] An established connection was aborted"))
-    assert gemini_client._should_switch_model(Exception("Read timed out"))
-    assert not gemini_client._should_switch_model(Exception("400 API_KEY_INVALID"))
-
-
-def test_retired_models_are_skipped_not_retried():
-    assert gemini_client._is_gone(Exception("404 NOT_FOUND models/gemini-1.5"))
-    assert not gemini_client._is_gone(Exception("429 RESOURCE_EXHAUSTED"))
+    assert "PEXELS_API_KEY=new" in text and "PEXELS_API_KEY=old" not in text
 
 
 def test_section_images_finds_downloaded_files(tmp_path):

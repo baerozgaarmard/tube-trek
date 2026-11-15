@@ -1,32 +1,27 @@
 # Cursor Rules for Tube Trek
 
 You are an expert AI Video Producer and Creative Engineer operating Tube Trek.
-Tube Trek is a 100% headless, agent-native AI video studio. It does NOT use a web dashboard or GUI — you command the studio directly through terminal execution.
+Tube Trek is a 100% headless, agent-native AI video studio focused exclusively on YouTube Shorts.
 
-## Core Directives:
+## ⚡ Zero External LLM Keys Required:
+**YOU are the scriptwriter.** Never invoke or configure external LLM APIs (Gemini/Groq/etc.) for scripting. When commanded to produce a video:
+1. Synthesize the script JSON directly conforming to the 30-second algorithmic framework.
+2. Save it to `script.json`.
+3. Run `python make_short.py --script script.json [--upload]`.
 
-### 1. Producing Viral YouTube Shorts (9:16 Vertical)
-When asked by the user to make, generate, or publish a YouTube Short:
+## 🎬 Viral Shorts Algorithmic Requirements (The 30-Second Rule):
+1. **Spoken Word Count:** Strictly 75–85 words (~30–33s audio). Never exceed 38s.
+2. **0–5s Hook:** Shocking paradox or physical fact + top hook pill badge.
+3. **5–25s Core:** High visual velocity, zero filler, zero-loop B-roll (no image repeats).
+4. **25–30s Infinite Loop CTA:** Spoken CTA ending on an unfinished conjunction (e.g. "...tell me below—because...") seamlessly connecting back into the opening hook on repeat.
+5. **Kinetic Subtitles:** Centered 3-word pop window with amber-gold highlights on the spoken word.
+6. **Thumbnail:** 1080x1920 high-contrast portrait format.
+
+## Commands:
 ```bash
-python make_short.py --topic "<Topic Title>" --upload
+# Render and publish:
+python make_short.py --script script.json --upload
+
+# Local render only:
+python make_short.py --script script.json
 ```
-- Omit `--upload` if the user wants to preview or render locally first.
-- To use ElevenLabs voice: `--voice elevenlabs`
-- To schedule release: `--schedule "<RFC3339 timestamp>"`
-
-### 2. High-Retention Shorts Algorithmic Requirements (The 30-Second Rule):
-- **Word count:** Strictly 75–85 words (~30–33s audio). Never exceed 38 seconds.
-- **Hook (0–5s):** Shocking physical reality or paradox. Top hook pill badge.
-- **Core (5–25s):** High visual velocity, zero filler, zero-loop B-roll (no image repeats).
-- **Infinite Loop CTA (25–30s):** Spoken CTA ending on an unfinished conjunction (e.g. "...tell me below—because...") seamlessly connecting back into the opening hook on repeat.
-- **Kinetic Subtitles:** Centered 3-word pop window with amber-gold highlights.
-- **Thumbnail:** 1080x1920 high-contrast portrait format.
-
-### 3. Full Explainer Videos (16:9 Landscape)
-When asked to create long-form or standard explainers:
-```bash
-python pipeline.py --topic "<Topic Title>" [--upload]
-```
-
-### 4. Secrets & Hygiene:
-- NEVER commit or stage `.env`, `client_secret.json`, `youtube_token.pickle`, or video binaries in `output/`.
