@@ -296,7 +296,8 @@ python make_short.py --topic "Why Paper Cuts Hurt More Than A Knife"
 <td align="center" width="390" valign="top">
 <br/>
 <a href="https://github.com/baerozgaarmard">
-  <img src="https://raw.githubusercontent.com/baerozgaarmard/tube-trek/main/assets/avatars/baerozgaarmard.png" width="125" height="125" alt="Ayush Bhatt"/>
+  <img src="https://raw.githubusercontent.com/baerozgaarmard/tube-trek/main/assets/avatars/baerozgaarmard_dark.png#gh-dark-mode-only" width="125" height="125" alt="Ayush Bhatt"/>
+  <img src="https://raw.githubusercontent.com/baerozgaarmard/tube-trek/main/assets/avatars/baerozgaarmard_light.png#gh-light-mode-only" width="125" height="125" alt="Ayush Bhatt"/>
 </a>
 <br/><br/>
 <a href="https://github.com/baerozgaarmard">
@@ -336,7 +337,8 @@ python make_short.py --topic "Why Paper Cuts Hurt More Than A Knife"
 <td align="center" width="390" valign="top">
 <br/>
 <a href="https://github.com/tanisha162">
-  <img src="https://raw.githubusercontent.com/baerozgaarmard/tube-trek/main/assets/avatars/tanisha162.png" width="125" height="125" alt="Tanisha Gupta"/>
+  <img src="https://raw.githubusercontent.com/baerozgaarmard/tube-trek/main/assets/avatars/tanisha162_dark.png#gh-dark-mode-only" width="125" height="125" alt="Tanisha Gupta"/>
+  <img src="https://raw.githubusercontent.com/baerozgaarmard/tube-trek/main/assets/avatars/tanisha162_light.png#gh-light-mode-only" width="125" height="125" alt="Tanisha Gupta"/>
 </a>
 <br/><br/>
 <a href="https://github.com/tanisha162">
