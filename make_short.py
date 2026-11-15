@@ -21,8 +21,6 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, BASE_DIR)
 
 import config
-from PIL import Image
-from moviepy.editor import VideoFileClip
 from video.stock import download_images
 from video.narrator import generate_narration
 from video.music import mix_music_with_narration
@@ -184,6 +182,7 @@ def produce_short(
     )
 
     # 8. QA Frame Checks
+    from moviepy.editor import VideoFileClip
     clip = VideoFileClip(video_path)
     duration = clip.duration
     clip.close()

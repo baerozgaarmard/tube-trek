@@ -112,24 +112,6 @@ def _load_bg_image(path: str) -> np.ndarray | None:
     return np.array(img.crop((left, top, left + W, top + H)), dtype=np.uint8)
 
 
-def _ken_burns(base: np.ndarray, t: float, duration: float,
-               zoom_start=None, zoom_end=None, pan_dir=(1, 0)) -> np.ndarray:
-    zs = zoom_start or config.KB_ZOOM_START
-    ze = zoom_end   or config.KB_ZOOM_END
-    p  = t / max(duration, 0.001)
-    scale   = zs + (ze - zs) * p
-    crop_w  = int(W / scale)
-    crop_h  = int(H / scale)
-    max_x   = W - crop_w
-    max_y   = H - crop_h
-    ox = int(max_x * 0.5 + max_x * 0.5 * pan_dir[0] * p)
-    oy = int(max_y * 0.5 + max_y * 0.5 * pan_dir[1] * p)
-    ox = max(0, min(ox, max_x))
-    oy = max(0, min(oy, max_y))
-    cropped = base[oy: oy + crop_h, ox: ox + crop_w]
-    return np.array(Image.fromarray(cropped).resize((W, H), Image.LANCZOS), dtype=np.uint8)
-
-
 def _apply_overlay(arr: np.ndarray, opacity: float = None) -> np.ndarray:
     op = opacity if opacity is not None else config.OVERLAY_OPACITY
     return (arr * (1 - op)).astype(np.uint8)
