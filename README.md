@@ -1,14 +1,14 @@
 <div align="center">
 
-<img src="https://capsule-render.vercel.app/api?type=waving&color=0:0d1117,50:161b22,100:ff6a00&height=220&section=header&text=Tube%20Trek&fontSize=72&fontColor=ffffff&fontAlignY=35&desc=Autonomous%20Agentic%20AI%20Video%20Pipeline&descSize=18&descAlignY=55&animation=fadeIn" width="100%" />
+<img src="https://capsule-render.vercel.app/api?type=waving&color=0:0d1117,50:161b22,100:ff6a00&height=220&section=header&text=Tube%20Trek&fontSize=72&fontColor=ffffff&fontAlignY=35&desc=Autonomous%20Agentic%20Shorts%20Studio&descSize=18&descAlignY=55&animation=fadeIn" width="100%" />
 
 <br/>
 
 <p>
 <a href="https://github.com/baerozgaarmard/tube-trek/releases/latest"><img src="https://img.shields.io/badge/Release-v1.0.0-blueviolet?style=for-the-badge&logo=github" alt="Release"/></a>&nbsp;
+<a href="#-100-free-zero-key-pipeline"><img src="https://img.shields.io/badge/Pipeline-100%25%20Free%20%C2%B7%20Zero%20API%20Keys-success?style=for-the-badge" alt="Free Pipeline"/></a>&nbsp;
 <a href="https://python.org"><img src="https://img.shields.io/badge/Python-3.10%20%7C%203.11-3776AB?style=for-the-badge&logo=python&logoColor=ffd43b" alt="Python"/></a>&nbsp;
 <a href="https://ffmpeg.org"><img src="https://img.shields.io/badge/FFmpeg-007808?style=for-the-badge&logo=ffmpeg&logoColor=white" alt="FFmpeg"/></a>&nbsp;
-<a href="https://elevenlabs.io"><img src="https://img.shields.io/badge/ElevenLabs-000000?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB4PSI5IiB5PSIzIiB3aWR0aD0iMiIgaGVpZ2h0PSIxOCIgcng9IjEiIGZpbGw9IndoaXRlIi8+PHJlY3QgeD0iMTMiIHk9IjMiIHdpZHRoPSIyIiBoZWlnaHQ9IjE4IiByeD0iMSIgZmlsbD0id2hpdGUiLz48L3N2Zz4=&logoColor=white" alt="ElevenLabs"/></a>&nbsp;
 <a href="https://developers.google.com/youtube/v3"><img src="https://img.shields.io/badge/YouTube%20API%20v3-FF0000?style=for-the-badge&logo=youtube&logoColor=white" alt="YouTube"/></a>&nbsp;
 <a href="LICENSE"><img src="https://img.shields.io/badge/Proprietary-Closed%20Source-ff6a00?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHJlY3QgeD0iMyIgeT0iMTEiIHdpZHRoPSIxOCIgaGVpZ2h0PSIxMSIgcng9IjIiIHJ5PSIyIi8+PHBhdGggZD0iTTcgMTFWN2E1IDUgMCAwIDEgMTAgMHY0Ii8+PC9zdmc+&logoColor=white" alt="License"/></a>
 </p>
@@ -19,9 +19,9 @@
 <tr>
 <td width="600">
 
-**Production-grade multi-agent AI studio** that autonomously produces high-retention YouTube Shorts — from topic ideation to published video — in a single command.
+**Autonomous Agent-Native YouTube Shorts Studio** that produces high-retention 9:16 vertical Shorts in a single command.
 
-Zero-repeat dynamic B-roll · Kinetic word-level captions · Sub-bass audio ducking · Fault-tolerant resumable uploads
+Zero-repeat dynamic B-roll · Kinetic word-level captions · Sub-bass audio ducking · 100% Free with zero LLM API keys required.
 
 </td>
 </tr>
@@ -29,7 +29,7 @@ Zero-repeat dynamic B-roll · Kinetic word-level captions · Sub-bass audio duck
 
 <br/>
 
-[Architecture](#-system-architecture) · [Features](#-key-features) · [Quickstart](#-quickstart) · [CLI](#-cli-usage) · [Benchmark](#-benchmark) · [License](#-license--ip)
+[Free Pipeline](#-100-free-zero-key-pipeline) · [Architecture](#-system-architecture) · [Features](#-key-features) · [Quickstart](#-quickstart) · [Benchmark](#-benchmark) · [License](#-license--ip)
 
 <br/>
 
@@ -37,37 +37,49 @@ Zero-repeat dynamic B-roll · Kinetic word-level captions · Sub-bass audio duck
 
 <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
 
+## ⚡ 100% Free Zero-Key Pipeline
+
+> [!TIP]
+> **No LLM API keys, no browser dashboard, no token bills.**
+> You can run Tube Trek completely free with a single install command directly via your AI coding agent (Cursor, Claude Code, Antigravity, Gemini CLI):
+> - **Zero LLM API Keys:** Your coding agent authors the viral script directly from its own intelligence.
+> - **Zero-Cost Voiceover:** Built-in neural voice synthesis via Microsoft Edge TTS (word-level sync included).
+> - **Free Visuals:** Automated B-roll from public domain and CC archives (NASA, Openverse, Pexels).
+> - **Local Compositor:** High-speed rendering with MoviePy and FFmpeg on your local machine.
+
+---
+
 ## 🏗️ System Architecture
 
 ```mermaid
 flowchart LR
-    subgraph INPUT["🎯 Input"]
-        A["Topic or Concept"]
+    subgraph INPUT["🎯 User Prompt"]
+        A["Topic or Idea in Chat"]
     end
 
-    subgraph SCRIPT["✍️ Script Engine"]
-        B["Hook Engineering"]
-        C["80-85 Word Script"]
-        D["Loop Conjunction"]
+    subgraph SCRIPT["🤖 AI Coding Agent"]
+        B["Reads .cursorrules / CLAUDE.md"]
+        C["Synthesizes 75-85w Script JSON"]
+        D["Hook + Infinite Replay Loop"]
     end
 
-    subgraph MEDIA["🎬 Parallel Pipeline"]
+    subgraph MEDIA["🎬 Free Media Pipeline"]
         direction TB
-        E["Neural Voice\nElevenLabs / Edge TTS"]
-        F["Word-Level SRT"]
-        G["Sub-Bass Mixing\n14% Volume"]
-        H["Multi-Source B-Roll\nPixabay / Openverse / NASA"]
-        I["Zero-Repeat Pool"]
+        E["Neural Voiceover\nEdge TTS (Free) / ElevenLabs"]
+        F["Word-Level Timing JSON"]
+        G["Sub-Bass Ducking\n14% Volume Bed"]
+        H["Visual Ingestion\nNASA / Openverse / Pixabay"]
+        I["Zero-Loop Pacing Pool"]
     end
 
-    subgraph RENDER["🖼️ Compositor"]
-        J["1080x1920 Vertical\nMoviePy + FFmpeg"]
+    subgraph RENDER["🖼️ Vertical Compositor"]
+        J["1080x1920 30FPS\nMoviePy + FFmpeg"]
         K["Kinetic Captions\nAmber-Gold Pop"]
-        L["Hook Badge +\nCTA Pill"]
-        M["Portrait Thumbnail"]
+        L["Hook Pill Badge +\nCTA Pill"]
+        M["9:16 Portrait Thumbnail"]
     end
 
-    subgraph PUBLISH["🚀 Publishing"]
+    subgraph PUBLISH["🚀 Resilient Publisher"]
         N["IPv4 Socket Layer"]
         O["5MB Chunked Upload\n5-Retry Loop"]
         P["YouTube Data API v3"]
@@ -89,36 +101,37 @@ flowchart LR
 ```
 
 <details>
-<summary><b>📋 ASCII Fallback</b> (click to expand)</summary>
+<summary><b>📋 ASCII Architecture Fallback</b> (click to expand)</summary>
 
 ```
-  ┌─────────────────┐       ┌──────────────────────────┐
-  │  Topic / Concept │──────▶│  Hook + 80-85w Script    │
-  └─────────────────┘       │  + Loop Conjunction Tail  │
-                            └────────────┬─────────────┘
-                     ┌───────────────────┼───────────────────┐
-                     ▼                                       ▼
-          ┌─────────────────────┐                 ┌─────────────────────┐
-          │  AUDIO PIPELINE     │                 │  VISUAL PIPELINE    │
-          │  ├─ Neural Voice    │                 │  ├─ Pixabay         │
-          │  ├─ Word-Level SRT  │                 │  ├─ Openverse       │
-          │  └─ Sub-Bass 14%    │                 │  └─ NASA Archive    │
-          └──────────┬──────────┘                 └──────────┬──────────┘
-                     └───────────────────┬───────────────────┘
-                                         ▼
-          ┌──────────────────────────────────────────────────────────┐
-          │  COMPOSITOR  ·  1080×1920  ·  MoviePy + FFmpeg          │
-          │  ├─ Kinetic 3-Word Captions (Amber-Gold Syllable Pop)   │
-          │  ├─ Top Hook Badge  ·  Bottom CTA Pill                  │
-          │  └─ 9:16 Portrait Thumbnail (Impact Layout)             │
-          └────────────────────────┬─────────────────────────────────┘
-                                   ▼
-          ┌──────────────────────────────────────────────────────────┐
-          │  RESILIENT PUBLISHER  ·  YouTube Data API v3            │
-          │  ├─ IPv4 Socket Monkey-Patch (Anti-SSL EOF)             │
-          │  ├─ 5 MB Chunked Resumable Upload  ·  5-Retry           │
-          │  └─ Public / Scheduled (RFC 3339)                       │
-          └──────────────────────────────────────────────────────────┘
+  ┌───────────────────────────┐       ┌────────────────────────────────────────┐
+  │  User Prompt in Agent UI  │──────▶│  AI Coding Agent (Cursor/Claude Code)  │
+  └───────────────────────────┘       │  ├─ 0-5s Paradox Hook                  │
+                                      │  ├─ 5-25s Scientific Core              │
+                                      │  └─ 25-30s Infinite Replay Conjunction │
+                                      └───────────────────┬────────────────────┘
+                               ┌──────────────────────────┴──────────────────────────┐
+                               ▼                                                     ▼
+                  ┌─────────────────────────┐                           ┌─────────────────────────┐
+                  │   AUDIO ENGINE          │                           │   VISUAL ENGINE         │
+                  │   ├─ Neural Edge TTS    │                           │   ├─ Pexels / Pixabay   │
+                  │   ├─ Word-Level Timing  │                           │   ├─ NASA Public Media  │
+                  │   └─ Sub-Bass 14% Duck  │                           │   └─ Zero-Loop Pool     │
+                  └────────────┬────────────┘                           └────────────┬────────────┘
+                               └──────────────────────────┬──────────────────────────┘
+                                                          ▼
+                               ┌─────────────────────────────────────────────────────┐
+                               │  VERTICAL COMPOSITOR  ·  1080×1920 (MoviePy/FFmpeg) │
+                               │  ├─ Kinetic 3-Word Captions (Amber-Gold Word Pop)   │
+                               │  ├─ Top Hook Pill Badge  ·  Bottom CTA Pill         │
+                               │  └─ 9:16 Portrait Thumbnail (Impact Layout)         │
+                               └──────────────────────────┬──────────────────────────┘
+                                                          ▼
+                               ┌─────────────────────────────────────────────────────┐
+                               │  PUBLISHER  ·  YouTube Data API v3 (Optional)       │
+                               │  ├─ IPv4 Anti-Timeout Layer  ·  5-Retry Loop        │
+                               │  └─ Resumable 5 MB Chunks  ·  Scheduled / Public   │
+                               └─────────────────────────────────────────────────────┘
 ```
 
 </details>
@@ -132,19 +145,19 @@ flowchart LR
 <td width="50%" valign="top">
 
 ### ⏱️ 30-Second Retention Engine
-- **75–85 words** calibrated for maximum Average Percentage Viewed
+- **75–85 words** calibrated for maximum Average Percentage Viewed (APV)
 - **Cognitive Hook (0–5s)** — counter-intuitive paradox with pill badge
-- **Infinite Loop** — unfinished conjunction links to opening hook on replay
+- **Infinite Loop (25–30s)** — unfinished conjunction links directly to opening hook on replay
 
 ### 🎨 Kinetic Word-Level Subtitles
 - Millisecond word-boundary synchronization
 - Clean 3-word reading window at **58% eye-line**
-- Active syllable highlighted in **amber-gold**
+- Active spoken word highlighted in **amber-gold**
 
-### 🎙️ Dual Voice + Sub-Bass Ducking
-- **Primary:** ElevenLabs `George` — deep, authoritative
-- **Fallback:** Edge TTS (`AndrewNeural` / `RyanNeural`) — zero cost
-- **Sound Bed:** Cinematic sub-bass at 14%–16% volume
+### 🎙️ Neural Voice + Sub-Bass Ducking
+- **Default:** Free neural Edge TTS (`en-US-AndrewNeural` / `en-GB-RyanNeural`) — zero cost, zero keys
+- **Optional:** ElevenLabs (`George` / `Alice`)
+- **Sound Bed:** Cinematic tension sub-bass dynamically ducked to **14% volume**
 
 </td>
 <td width="50%" valign="top">
@@ -160,12 +173,12 @@ Smooth Ken Burns transitions without snapping back.
 - **IPv4 Monkey-Patch** — forces `AF_INET` to prevent Windows SSL EOF
 - **5-Retry Chunk Loop** — 5 MB resumable uploads with automatic backoff
 
-### 🤖 Agent-Native
+### 🤖 100% Agent-Native
 First-class manifests for AI coding assistants:
 - **`CLAUDE.md`** → Claude Code
 - **`.cursorrules`** → Cursor IDE
 
-> *"Create a Short about the Fermi Paradox and schedule it for 5 PM."*
+> *"Create a Short about the Fermi Paradox and publish it."*
 
 </td>
 </tr>
@@ -175,16 +188,15 @@ First-class manifests for AI coding assistants:
 
 ## 🚀 Quickstart
 
-### 1 · Clone & Install
+### 1 · One-Command Install
 
 ```bash
 git clone https://github.com/baerozgaarmard/tube-trek.git
 cd tube-trek
-python -m venv .venv && .venv\Scripts\activate   # Windows
 pip install -r requirements.txt
 ```
 
-### 2 · FFmpeg
+### 2 · Ensure FFmpeg is Installed
 
 ```bash
 winget install Gyan.FFmpeg          # Windows
@@ -192,35 +204,42 @@ brew install ffmpeg                 # macOS
 sudo apt install ffmpeg             # Ubuntu/Debian
 ```
 
-### 3 · Configure `.env`
+### 3 · Command Your AI Agent Directly (Zero Setup)
+
+You don't need any LLM API keys. Simply open your project in Cursor, Claude Code, or Antigravity and prompt:
+
+> *"Create a YouTube Short about why paper cuts hurt more than knife cuts"*
+
+Your coding agent will draft `script.json` and execute:
 
 ```bash
-cp .env.example .env
+# Preview / render locally:
+python make_short.py --script script.json
+
+# Render and publish immediately:
+python make_short.py --script script.json --upload
 ```
 
-```ini
-PIXABAY_API_KEY=your_key            # Stock imagery
-PEXELS_API_KEY=your_key
-VOICE_ENGINE=edge-tts               # or "elevenlabs"
-ELEVENLABS_API_KEY=your_key
-YOUTUBE_CHANNEL_ID=your_id          # Place client_secret.json in root
-```
+*(Optional: If you want automated stock image downloads and direct YouTube uploads, add your free Pexels key to `.env` and place your `client_secret.json` in the root).*
 
 ---
 
 ## 💻 CLI Usage
 
 ```bash
-# Generate + publish in one shot
-python make_short.py --topic "Why Paper Cuts Hurt More Than A Knife" --upload
+# 1. From an agent-authored script:
+python make_short.py --script script.json
 
-# From a pre-written script
-python make_short.py --script output/custom_script.json --upload
+# 2. Render and publish directly to YouTube:
+python make_short.py --script script.json --upload
 
-# ElevenLabs voice + scheduled release
+# 3. ElevenLabs voice + scheduled release:
 python make_short.py \
-  --topic "Inside A Black Hole You Watch The Universe Die" \
-  --voice elevenlabs --upload --schedule "2026-11-15T05:00:00Z"
+  --script script.json \
+  --voice elevenlabs --upload --schedule "2026-11-16T12:00:00Z"
+
+# 4. Instant standalone render from topic (uses built-in viral template):
+python make_short.py --topic "Why Paper Cuts Hurt More Than A Knife"
 ```
 
 <details>
@@ -228,14 +247,14 @@ python make_short.py \
 
 | Flag | Description | Default |
 |:---|:---|:---|
-| `--topic` | Video concept or title | — |
-| `--script` | Path to pre-generated JSON script | — |
-| `--voice` | Engine: `elevenlabs` or `edge-tts` | `edge-tts` |
-| `--music-volume` | Background music level | `0.14` |
-| `--upload` | Publish to YouTube after render | `false` |
+| `--script` | Path to custom agent-authored `script.json` | — |
+| `--topic` | Topic title (uses built-in high-retention template) | — |
+| `--voice` | Voice engine: `edge-tts` (free) or `elevenlabs` | `edge-tts` |
+| `--music-volume` | Background music volume level | `0.14` |
+| `--upload` | Publish to YouTube via Data API v3 | `false` |
 | `--privacy` | `public` · `private` · `unlisted` | `public` |
-| `--schedule` | RFC 3339 timestamp for release | — |
-| `--thumb-text` | Custom thumbnail headline | — |
+| `--schedule` | RFC 3339 timestamp for future release | — |
+| `--thumb-text` | Custom thumbnail headline text | — |
 
 </details>
 
@@ -249,12 +268,14 @@ python make_short.py \
 <th width="35%">Standard AI Video Tools</th>
 <th width="35%">Tube Trek</th>
 </tr>
-<tr><td><b>Duration Control</b></td><td>❌ Unpredictable 45s–90s</td><td>✅ Strictly 30–33s</td></tr>
-<tr><td><b>Visual Looping</b></td><td>❌ Same 3–4 images repeat</td><td>✅ Zero-loop — 100% unique</td></tr>
-<tr><td><b>Kinetic Captions</b></td><td>❌ Static centered blocks</td><td>✅ 3-word amber pop window</td></tr>
-<tr><td><b>Replay Hook</b></td><td>❌ Abrupt ending</td><td>✅ Infinite conjunction loop</td></tr>
-<tr><td><b>Audio Balance</b></td><td>❌ Music drowns voice</td><td>✅ 14% dynamic ducking</td></tr>
-<tr><td><b>Upload Resilience</b></td><td>❌ Fails on network drop</td><td>✅ Chunked 5-retry engine</td></tr>
+<tr><td><b>Cost & Setup</b></td><td>❌ Requires paid LLM API keys & web login</td><td>✅ <b>100% Free · Zero API Keys Needed</b></td></tr>
+<tr><td><b>Workflow</b></td><td>❌ Click buttons in browser dashboard</td><td>✅ <b>One prompt to your AI coding agent</b></td></tr>
+<tr><td><b>Duration Control</b></td><td>❌ Unpredictable 45s–90s</td><td>✅ <b>Strictly 30–33s</b> (High APV)</td></tr>
+<tr><td><b>Visual Looping</b></td><td>❌ Same 3–4 images repeat</td><td>✅ <b>Zero-loop — 100% unique shots</b></td></tr>
+<tr><td><b>Kinetic Captions</b></td><td>❌ Static centered text blocks</td><td>✅ <b>3-word amber pop window</b></td></tr>
+<tr><td><b>Replay Hook</b></td><td>❌ Abrupt ending</td><td>✅ <b>Infinite conjunction loop</b></td></tr>
+<tr><td><b>Audio Balance</b></td><td>❌ Music drowns voice</td><td>✅ <b>14% dynamic sub-bass ducking</b></td></tr>
+<tr><td><b>Upload Resilience</b></td><td>❌ Fails on network drop</td><td>✅ <b>Chunked 5-retry resumable engine</b></td></tr>
 </table>
 
 ---
@@ -286,7 +307,7 @@ python make_short.py \
 
 ## 🔒 License & IP
 
-**Proprietary and Confidential.** All Rights Reserved.
+**Proprietary and Confidential.** All Rights Reserved.  
 Copyright © 2026 **Ayush Bhatt** and **Tanisha Gupta**.
 
 This repository is **Closed Source**. No license or right is granted to copy, distribute, modify, reverse-engineer, or commercially exploit this software without express written permission from the authors. See [LICENSE](LICENSE) for full legal terms.
