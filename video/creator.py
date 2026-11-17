@@ -456,35 +456,36 @@ def _build_shorts_clip(all_images: list, total_duration: float,
     scroll-stop hook + end engagement badges.
     """
     n_imgs = len(all_images) if all_images else 0
+    # Rapid 1.4s - 2.2s cuts for peak dopamine / retention
+    target_slot_dur = 2.0
     if n_imgs > 0 and total_duration > 0:
-        slot_dur = max(1.25, min(3.5, total_duration / n_imgs))
+        slot_dur = max(1.4, min(2.2, total_duration / n_imgs))
     else:
-        slot_dur = float(getattr(config, "SHORTS_IMG_DURATION", 2.0))
+        slot_dur = target_slot_dur
 
-    xfade_dur = min(0.22, slot_dur * 0.25)
+    xfade_dur = min(0.20, slot_dur * 0.20)
 
     def make_frame(t):
         if n_imgs > 0:
-            slot      = t / slot_dur
-            cur_idx   = min(int(slot), n_imgs - 1)
-            img_t     = t - (cur_idx * slot_dur)
+            slot_idx = int(t / slot_dur)
+            cur_idx  = slot_idx % n_imgs
+            slot_start = slot_idx * slot_dur
+            img_t    = t - slot_start
 
-            cur_slot_start = cur_idx * slot_dur
-            cur_kb_t  = t - cur_slot_start
-
-            cur_frame = _get_shot_frame(all_images[cur_idx], cur_kb_t, cur_idx, slot_dur)
+            cur_frame = _get_shot_frame(all_images[cur_idx], img_t, slot_idx, slot_dur)
             cur_frame = _apply_overlay(cur_frame, opacity=0.36)
             cur_frame = _apply_vignette(cur_frame)
 
             xfade_start = slot_dur - xfade_dur
-            if img_t >= xfade_start and cur_idx < n_imgs - 1:
+            if img_t >= xfade_start:
                 raw_alpha = (img_t - xfade_start) / xfade_dur
                 alpha = raw_alpha * raw_alpha * (3.0 - 2.0 * raw_alpha)
 
-                next_idx        = cur_idx + 1
-                next_slot_start = (cur_idx + 1) * slot_dur
+                next_slot_idx   = slot_idx + 1
+                next_idx        = next_slot_idx % n_imgs
+                next_slot_start = next_slot_idx * slot_dur
                 next_kb_t       = max(0.0, t - next_slot_start)
-                nxt_frame       = _get_shot_frame(all_images[next_idx], next_kb_t, next_idx, slot_dur)
+                nxt_frame       = _get_shot_frame(all_images[next_idx], next_kb_t, next_slot_idx, slot_dur)
                 nxt_frame       = _apply_overlay(nxt_frame, opacity=0.36)
                 nxt_frame       = _apply_vignette(nxt_frame)
 

@@ -453,7 +453,7 @@ def generate_narration(script: dict, output_dir: str) -> str:
 
     if not synthesised:
         import time
-        candidate_voices = [config.VOICE_ID, "en-US-ChristopherNeural", "en-GB-RyanNeural", "en-US-GuyNeural"]
+        candidate_voices = [config.VOICE_ID, "en-US-BrianMultilingualNeural", "en-US-AndrewNeural", "en-GB-RyanNeural"]
         # Deduplicate while preserving order
         candidate_voices = list(dict.fromkeys([v for v in candidate_voices if v]))
 

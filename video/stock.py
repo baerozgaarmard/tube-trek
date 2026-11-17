@@ -220,8 +220,20 @@ def _fetch_images(query: str, section_index: int, images_dir: str,
                 _credits.append({"file": fname, "query": attempt_query, **cand["credit"]})
             if len(saved) >= count:
                 return saved
-        if saved:
-            break
+
+    # Guaranteed fallback: if stock APIs yielded fewer images than needed, generate via Pollinations AI
+    needed = count - len(saved)
+    if needed > 0:
+        for cand in image_apis.PROVIDERS["pollinations"](query, orientation, needed):
+            fname = f"section_{section_index:02d}_img{img_num_start + len(saved) + 1:02d}.jpg"
+            path = os.path.join(images_dir, fname)
+            if image_apis.fetch(cand, path):
+                saved.append(path)
+                _used_urls.add(cand["url"])
+                _record_used_url(cand["url"])
+                _credits.append({"file": fname, "query": query, **cand["credit"]})
+            if len(saved) >= count:
+                break
     return saved
 
 

@@ -28,6 +28,9 @@ auth_url.txt
 
 # ── Downloaded fonts (fetched from Google Fonts on first run) ──
 assets/fonts/
+assets/models/
+*.onnx
+*.bin
 
 # ── Generated output — large files ───────
 output/

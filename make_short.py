@@ -153,8 +153,9 @@ def produce_short(
 
     # 5. Mix Audio Bed & Procedural Micro-SFX
     shot_count = sum(len(paths) if isinstance(paths, list) else 1 for paths in image_map.values() if paths)
-    slot_dur = max(1.25, min(3.5, 30.0 / max(1, shot_count)))
-    cut_timestamps = [round(i * slot_dur, 2) for i in range(1, shot_count)]
+    slot_dur = max(1.4, min(2.2, 30.0 / max(1, shot_count)))
+    total_cuts = max(shot_count, int(30.0 / slot_dur))
+    cut_timestamps = [round(i * slot_dur, 2) for i in range(1, total_cuts)]
 
     print(f"\n[3/5] Mixing tension sub-bass audio bed & procedural micro-SFX (volume: {int(music_volume * 100)}%)...")
     mixed_audio_path = os.path.join(job_dir, "narration_mixed.mp3")
