@@ -279,7 +279,7 @@ def download_images(script: dict, output_dir: str) -> dict:
         sid   = section["id"]
         # Collect all image queries defined for this section
         queries = [section.get("image_query", "science universe space")]
-        for extra_key in ("image_query_2", "image_query_3", "image_query_4"):
+        for extra_key in ("image_query_2", "image_query_3", "image_query_4", "image_query_5"):
             q = section.get(extra_key, "").strip()
             if q:
                 queries.append(q)
