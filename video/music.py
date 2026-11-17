@@ -124,7 +124,7 @@ def mix_music_with_narration(narration_path: str,
                               cut_timestamps: list = None,
                               enable_sfx: bool = True) -> str:
     """
-    Mix background music and procedural micro-SFX (whoosh, sub-drop) under narration.
+    Mix background music and procedural micro-SFX (braam impact, mechanical clicks) under narration.
     """
     import shutil
     from moviepy.editor import AudioFileClip, CompositeAudioClip
@@ -141,7 +141,7 @@ def mix_music_with_narration(narration_path: str,
             from video.sfx import build_sfx_tracks
             sfx_clips = build_sfx_tracks(target_dir, cut_timestamps=cut_timestamps)
             if sfx_clips:
-                print(f"   → Mixed {len(sfx_clips)} procedural micro-SFX cues (whoosh + sub-drop)")
+                print(f"   → Mixed {len(sfx_clips)} procedural micro-SFX cues (braam impact + mechanical clicks)")
         except Exception as e:
             print(f"   ⚠ SFX build notice: {e}")
 

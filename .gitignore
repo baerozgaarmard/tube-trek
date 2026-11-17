@@ -20,6 +20,8 @@ ENV/
 # ── Secrets — NEVER commit these ─────────
 client_secret.json
 youtube_token.pickle
+youtube_token.json
+auth_url.txt
 .env
 *.pickle
 *.pkl
@@ -58,4 +60,18 @@ produce_*.py
 upload_*.py
 do_upload.py
 batch_produce*.py
+complete_*.py
+check_*.py
+extract_*.py
+inspect_*.py
+make_all_public.py
+reauth_*.py
+start_auth_*.py
+analyze_*.py
+*.json.bak
+channel_analytics_raw.json
+batch_10_manifest.json
+*.json
+!used_media_registry.json
+shorts_retention_audience_analysis.md
 scratch/

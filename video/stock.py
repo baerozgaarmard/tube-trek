@@ -36,7 +36,36 @@ FALLBACK_QUERIES = [
 
 # Every image downloaded this run → credits.json
 _credits: list = []
-_used_urls: set = set()
+
+REGISTRY_FILE = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "used_media_registry.json")
+
+
+def _load_used_urls() -> set:
+    """Load persistent set of all media URLs ever used across all runs to guarantee zero repeats."""
+    if os.path.exists(REGISTRY_FILE):
+        try:
+            with open(REGISTRY_FILE, "r", encoding="utf-8") as f:
+                data = json.load(f)
+                return set(data.get("used_urls", []))
+        except Exception:
+            pass
+    return set()
+
+
+def _record_used_url(url: str):
+    """Persist newly downloaded media URL to disk registry immediately."""
+    if not url:
+        return
+    current = _load_used_urls()
+    current.add(url)
+    try:
+        with open(REGISTRY_FILE, "w", encoding="utf-8") as f:
+            json.dump({"used_urls": sorted(list(current))}, f, indent=2)
+    except Exception:
+        pass
+
+
+_used_urls: set = _load_used_urls()
 
 
 def _pexels_ready() -> bool:
@@ -141,12 +170,12 @@ def _pixabay_videos(query: str, count: int) -> list:
 def _candidates(query: str, orientation: str, count: int, allow_video: bool = True) -> list:
     if allow_video and orientation == "portrait":
         vids = _pexels_videos(query, orientation, count) or _pixabay_videos(query, count)
-        c = [x for x in vids if x["url"] not in _used_urls]
+        c = [x for x in vids if x["url"] not in _used_urls and x.get("credit", {}).get("link") not in _used_urls]
         if c:
             return c
     if _pexels_ready():
         try:
-            c = [x for x in _pexels(query, orientation, count) if x["url"] not in _used_urls]
+            c = [x for x in _pexels(query, orientation, count) if x["url"] not in _used_urls and x.get("credit", {}).get("link") not in _used_urls]
             if c:
                 return c
         except Exception as e:
@@ -183,6 +212,11 @@ def _fetch_images(query: str, section_index: int, images_dir: str,
             if image_apis.fetch(cand, path):
                 saved.append(path)
                 _used_urls.add(cand["url"])
+                _record_used_url(cand["url"])
+                link = cand.get("credit", {}).get("link")
+                if link:
+                    _used_urls.add(link)
+                    _record_used_url(link)
                 _credits.append({"file": fname, "query": attempt_query, **cand["credit"]})
             if len(saved) >= count:
                 return saved
@@ -211,7 +245,8 @@ def download_images(script: dict, output_dir: str) -> dict:
         except OSError:
             pass
     _credits.clear()
-    _used_urls.clear()
+    global _used_urls
+    _used_urls = _load_used_urls()
 
     if not _pexels_ready():
         order = " → ".join(getattr(config, "IMAGE_SOURCES", []))

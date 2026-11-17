@@ -79,7 +79,7 @@ def brand_text() -> str:
 VOICE_ENGINE        = os.getenv("VOICE_ENGINE", "edge-tts")
 ELEVENLABS_VOICE_ID = os.getenv("ELEVENLABS_VOICE_ID", "Xb7hH8MSUJpSbSDYk0k2")
 ELEVENLABS_MODEL    = os.getenv("ELEVENLABS_MODEL", "eleven_multilingual_v2")
-VOICE_ID            = os.getenv("VOICE_ID", "en-US-AndrewNeural")
+VOICE_ID            = os.getenv("VOICE_ID", "en-US-ChristopherNeural")
 VOICE_RATE          = '-5%'     # slow down slightly for narration feel
 VOICE_PITCH         = '-3Hz'    # slightly deeper = more cinematic
 
@@ -136,6 +136,7 @@ YOUTUBE_SCOPES        = [
     "https://www.googleapis.com/auth/youtube.upload",
     "https://www.googleapis.com/auth/youtube.readonly",
     "https://www.googleapis.com/auth/yt-analytics.readonly",
+    "https://www.googleapis.com/auth/youtube.force-ssl",
 ]
 VIDEO_CATEGORY_ID     = "27"       # 27 = Education
 VIDEO_PRIVACY         = 'public'   # "public" | "unlisted" | "private"

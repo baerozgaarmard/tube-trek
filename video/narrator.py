@@ -452,16 +452,28 @@ def generate_narration(script: dict, output_dir: str) -> str:
             print(f"   [!] ElevenLabs synthesis failed ({e}) - falling back to Edge TTS...")
 
     if not synthesised:
-        print(f"   -> Synthesising {len(full_text.split())} words via Edge TTS ({config.VOICE_ID})...")
-        try:
-            asyncio.run(_synthesise(full_text, audio_path, srt_path))
-        except Exception as e:
-            if "403" in str(e):
-                raise RuntimeError(
-                    "Microsoft's free voice service rejected the request (403). "
-                    "Update the voice library:  pip install -U edge-tts"
-                ) from e
-            raise
+        import time
+        candidate_voices = [config.VOICE_ID, "en-US-ChristopherNeural", "en-GB-RyanNeural", "en-US-GuyNeural"]
+        # Deduplicate while preserving order
+        candidate_voices = list(dict.fromkeys([v for v in candidate_voices if v]))
+
+        success = False
+        for v in candidate_voices:
+            config.VOICE_ID = v
+            print(f"   -> Synthesising {len(full_text.split())} words via Edge TTS ({v})...")
+            for attempt in range(1, 3):
+                try:
+                    asyncio.run(_synthesise(full_text, audio_path, srt_path))
+                    success = True
+                    break
+                except Exception as e:
+                    print(f"   ⚠ Edge-TTS glitch on {v} ({e}), retrying ({attempt}/2)...")
+                    time.sleep(1.5)
+            if success:
+                break
+
+        if not success:
+            raise RuntimeError("All Edge-TTS candidate voices failed to return audio.")
 
     # ── Post-run report ──────────────────────────────────────────────────────
     size_kb     = os.path.getsize(audio_path) // 1024

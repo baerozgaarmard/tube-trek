@@ -62,17 +62,23 @@ def _nasa(query: str, orientation: str, count: int) -> list:
     if not _SPACE_WORDS.search(query):
         return []          # NASA's library is superb for space, useless otherwise
     d = get_json("https://images-api.nasa.gov/search", params={
-        "q": query, "media_type": "image", "page_size": max(10, count * 3),
+        "q": query, "media_type": "image", "page_size": max(25, count * 5),
     })
     out = []
-    for item in d.get("collection", {}).get("items", []):
+    items = d.get("collection", {}).get("items", [])
+    if items:
+        random.shuffle(items)
+    for item in items:
         links = item.get("links") or []
         data = (item.get("data") or [{}])[0]
         if not links:
             continue
         href = links[0].get("href", "")
+        # Prefer original / large resolution
+        orig_href = re.sub(r"~(thumb|small|medium)\.", "~orig.", href)
+        large_href = re.sub(r"~(thumb|small|medium)\.", "~large.", href)
         out.append({
-            "url": re.sub(r"~(thumb|small|medium)\.", "~large.", href),
+            "url": large_href,
             "fallback_url": href,
             "credit": {"source": "NASA", "author": data.get("center") or "NASA",
                        "license": "Public domain",
@@ -96,22 +102,26 @@ def _openverse(query: str, orientation: str, count: int) -> list:
     } for r in d.get("results", []) if r.get("url")]
 
 
-def pollinations_url(prompt: str, width: int = 1280, height: int = 720,
+def pollinations_url(prompt: str, width: int = 1080, height: int = 1920,
                      seed: int | None = None) -> str:
-    seed = seed if seed is not None else random.randint(1, 10**6)
+    seed = seed if seed is not None else random.randint(1000000, 999999999)
     return (f"https://image.pollinations.ai/prompt/{quote(prompt[:400], safe='')}"
-            f"?width={width}&height={height}&nologo=true&seed={seed}")
+            f"?width={width}&height={height}&nologo=true&seed={seed}&enhance=true")
 
 
 def _pollinations(query: str, orientation: str, count: int) -> list:
     w, h = (1080, 1920) if orientation == "portrait" else (1920, 1080)
-    prompt = f"cinematic documentary photograph, {query}, dramatic lighting, high detail, no text"
-    return [{
-        "url": pollinations_url(prompt, w, h),
-        "timeout": 120,
-        "credit": {"source": "Pollinations AI", "author": "AI-generated",
-                   "license": "Pollinations terms", "link": "https://pollinations.ai"},
-    } for _ in range(count)]
+    out = []
+    for _ in range(count):
+        s = random.randint(1000000, 999999999)
+        prompt = f"hyperrealistic award winning 8k, {query}, cinematic volumetric lighting, IMAX quality, photorealistic, 35mm lens, high contrast, no text"
+        out.append({
+            "url": pollinations_url(prompt, w, h, seed=s),
+            "timeout": 120,
+            "credit": {"source": "Pollinations AI", "author": "AI-generated",
+                       "license": "Pollinations terms", "link": "https://pollinations.ai"},
+        })
+    return out
 
 
 PROVIDERS = {
@@ -132,7 +142,8 @@ def search(query: str, orientation: str = "landscape", count: int = 1,
     for name in order:
         try:
             cands = [c for c in PROVIDERS[name](query, orientation, count)
-                     if c.get("url") and c["url"] not in exclude_urls]
+                     if c.get("url") and c["url"] not in exclude_urls
+                     and c.get("credit", {}).get("link") not in exclude_urls]
         except Exception as e:
             print(f"   ⚠ {name} image search failed for '{query[:40]}': {e}")
             continue

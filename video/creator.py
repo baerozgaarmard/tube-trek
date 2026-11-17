@@ -320,7 +320,7 @@ def _draw_kinetic_words(frame_img: Image.Image, chunk: dict, t: float) -> Image.
         ww   = int(fnt.getlength(txt))
         items.append((txt, fnt, ww, i == active_idx))
 
-    max_w = W - 110
+    max_w = W - 240  # Keep 120px margin clear on left and right (safe from Shorts UI icons)
     lines, cur, cur_w = [], [], 0
     for item in items:
         add_w = item[2] if not cur else cur_w + space_w + item[2]
@@ -333,15 +333,18 @@ def _draw_kinetic_words(frame_img: Image.Image, chunk: dict, t: float) -> Image.
     if cur:
         lines.append((cur, cur_w))
 
-    block_y = int(H * 0.58)
     line_h  = 86
+    total_h = len(lines) * line_h
+    # EXACT CENTER OF SCREEN (vertically and horizontally centered)
+    block_y = (H - total_h) // 2
+
     for li, (line_items, total_w) in enumerate(lines):
         x = (W - total_w) // 2
         y_base = block_y + li * line_h
         for txt, fnt, ww, is_active in line_items:
-            y = y_base - (5 if is_active else 0)
-            fill = (255, 214, 10) if is_active else (255, 255, 255)
-            draw.text((x, y), txt, font=fnt, fill=fill, stroke_width=6, stroke_fill=(0, 0, 0))
+            y = y_base - (6 if is_active else 0)
+            fill = (255, 225, 0) if is_active else (255, 255, 255)
+            draw.text((x, y), txt, font=fnt, fill=fill, stroke_width=7, stroke_fill=(0, 0, 0))
             x += ww + space_w
     return frame_img
 
@@ -354,11 +357,16 @@ def _draw_pill_banner(frame_img: Image.Image, text: str, y: int,
     base = frame_img.convert("RGBA")
     ov   = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     od   = ImageDraw.Draw(ov)
+    # Dynamically scale font if text is too wide so pill never overflows screen margins
+    max_pill_w = W - 180
     font = _load_font("bold", size)
+    while size > 22 and int(font.getlength(text)) > max_pill_w:
+        size -= 2
+        font = _load_font("bold", size)
     tw   = int(font.getlength(text))
     pad_x, pad_y = 28, 12
-    x0   = (W - tw) // 2 - pad_x
-    x1   = (W + tw) // 2 + pad_x
+    x0   = max(40, (W - tw) // 2 - pad_x)
+    x1   = min(W - 40, (W + tw) // 2 + pad_x)
     od.rounded_rectangle([x0, y, x1, y + size + pad_y * 2], radius=14, fill=bg_rgba)
     out  = Image.alpha_composite(base, ov)
     d2   = ImageDraw.Draw(out)
@@ -385,11 +393,12 @@ def _draw_shorts_caption(frame_img: Image.Image, text: str) -> Image.Image:
     # Measure text before drawing
     measure_draw = ImageDraw.Draw(base_rgba)
     font         = _load_font("bold", CAP_FONT_SIZE)
-    max_w        = W - 80
+    max_w        = W - 240  # 120px safe margins from screen edges & Shorts action icons
     lines        = _wrap_text(measure_draw, text.upper(), font, max_w)
 
     line_h  = CAP_FONT_SIZE + 12
-    block_y = int(H * 0.72)     # sit in lower quarter of 9:16 frame
+    total_h = len(lines) * line_h
+    block_y = (H - total_h) // 2  # dead center of screen
     pad     = 20
 
     # Build pill-background overlay
@@ -489,13 +498,14 @@ def _build_shorts_clip(all_images: list, total_duration: float,
         frame = Image.fromarray(frame_np)
 
         # ── Scroll-stop visual hook badge (first 3.0s) ──────────
+        # Positioned cleanly in upper safe zone (below top search/music bar, above center captions)
         if hook_badge and t < 3.0:
             frame = _draw_pill_banner(
-                frame, hook_badge.upper(), y=int(H * 0.19),
+                frame, hook_badge.upper(), y=210,
                 bg_rgba=(220, 38, 38, 225), fg_rgb=(255, 255, 255), size=36,
             )
 
-        # ── Kinetic Captions (word-highlighted if timings exist)
+        # ── Kinetic Captions (word-highlighted if timings exist, dead-center)
         chunk = _get_chunk_at(word_chunks, t) if word_chunks else None
         if chunk:
             frame = _draw_kinetic_words(frame, chunk, t)
@@ -504,21 +514,22 @@ def _build_shorts_clip(all_images: list, total_duration: float,
             frame    = _draw_shorts_caption(frame, cap_text)
 
         # ── End engagement prompt badge (final 3.6s) ───────────
+        # Positioned cleanly at y=1310 (above bottom YouTube channel/title interface)
         if end_badge and t >= max(0.0, total_duration - 3.6):
             frame = _draw_pill_banner(
-                frame, end_badge, y=int(H * 0.75),
-                bg_rgba=(15, 23, 42, 220), fg_rgb=(255, 214, 10), size=36,
+                frame, end_badge, y=1310,
+                bg_rgba=(15, 23, 42, 220), fg_rgb=(255, 225, 0), size=36,
             )
 
-        # ── Top brand strip ───────────────────────────────────
+        # ── Top brand strip (below phone camera notch) ─────────
         draw = ImageDraw.Draw(frame)
         if config.brand_text():
-            font_brand = _load_font("bold", 30)
+            font_brand = _load_font("bold", 28)
             brand      = f"@{config.brand_text().upper()}"
             bbox       = draw.textbbox((0, 0), brand, font=font_brand)
             bw         = bbox[2] - bbox[0]
-            draw.text(((W - bw) // 2, 50), brand, font=font_brand,
-                      fill=(255, 255, 255, 160))
+            draw.text(((W - bw) // 2, 120), brand, font=font_brand,
+                      fill=(255, 255, 255, 175))
 
         return np.array(frame)
 
