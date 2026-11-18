@@ -149,4 +149,26 @@ def upload_to_youtube(script: dict, video_path: str, thumbnail_path: str = None,
         except Exception as e:
             print(f"   ⚠ Thumbnail upload warning: {e}")
 
+    # Post engagement discussion comment if provided in script
+    pinned_comment = script.get("pinned_comment")
+    if pinned_comment:
+        try:
+            print("   → Posting discussion trigger comment…")
+            youtube.commentThreads().insert(
+                part="snippet",
+                body={
+                    "snippet": {
+                        "videoId": video_id,
+                        "topLevelComment": {
+                            "snippet": {
+                                "textOriginal": pinned_comment
+                            }
+                        }
+                    }
+                }
+            ).execute()
+            print("   ✓ Discussion trigger comment posted successfully")
+        except Exception as e:
+            print(f"   ⚠ Comment posting warning: {e}")
+
     return f"https://www.youtube.com/watch?v={video_id}"
