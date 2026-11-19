@@ -261,17 +261,18 @@ def _apply_vignette(arr: np.ndarray) -> np.ndarray:
 
 def _zoom_pulse(base: np.ndarray, img_t: float, img_index: int = 0, slot_dur: float = None) -> np.ndarray:
     """
-    Alternating Ken Burns punch per shot: even shots push in (1.0 -> 1.09),
-    odd shots pull out (1.09 -> 1.0) with opposite horizontal drift for rhythm.
+    Alternating Ken Burns punch per shot: even shots push in (1.0 -> 1.12),
+    odd shots pull out (1.12 -> 1.0) with subtle cinematic drift.
     """
     dur      = slot_dur if slot_dur else SHORTS_IMG_DURATION
     progress = min(img_t / max(dur, 0.001), 1.0)
+    ease     = progress * progress * (3.0 - 2.0 * progress)
     if img_index % 2 == 0:
-        scale = 1.0 + 0.09 * progress
-        pan_x = 0.02 * progress
+        scale = 1.0 + 0.12 * ease
+        pan_x = 0.025 * ease
     else:
-        scale = 1.09 - 0.09 * progress
-        pan_x = -0.02 * progress
+        scale = 1.12 - 0.10 * ease
+        pan_x = -0.025 * ease
 
     crop_w = int(W / scale)
     crop_h = int(H / scale)
@@ -293,10 +294,19 @@ def _group_kinetic_chunks(word_timings: list, max_words: int = 3) -> list:
     return chunks
 
 
+HIGH_VOLTAGE_WORDS = {
+    "JUPITER", "NIGHTMARE", "BOILING", "LIGHTNING", "DEATH", "ETERNITY",
+    "EXPLODE", "FIRE", "HELL", "COLLAPSE", "TRAPPED", "BOTTOM", "SUN",
+    "SHOCK", "NEVER", "EXTINCT", "HOLE", "RADIATION", "SECRET", "CRUSHING",
+    "ALIEN", "PARALYZES", "EXTREME", "KILL", "SURVIVE", "INDESTRUCTIBLE",
+    "OCEAN", "BLACK", "PRESSURE", "POISON", "DESTROY", "TERROR"
+}
+
+
 def _draw_kinetic_words(frame_img: Image.Image, chunk: dict, t: float) -> Image.Image:
     """
     Render punchy centered kinetic captions with the active spoken word popped in amber-gold
-    and crisp thick black stroke (no bulky translucent box covering visuals).
+    or neon coral for high-voltage words, backed by a 3D drop-shadow.
     """
     words = chunk["words"]
     if not words:
@@ -309,10 +319,9 @@ def _draw_kinetic_words(frame_img: Image.Image, chunk: dict, t: float) -> Image.
 
     draw      = ImageDraw.Draw(frame_img)
     font_norm = _load_font("bold", 68)
-    font_pop  = _load_font("bold", 76)
+    font_pop  = _load_font("bold", 78)
     space_w   = int(font_norm.getlength(" ") * 1.15)
 
-    # Measure total width of the chunk; split into 2 lines only if wider than safe margin
     items = []
     for i, w in enumerate(words):
         txt  = w["word"].upper()
@@ -320,7 +329,7 @@ def _draw_kinetic_words(frame_img: Image.Image, chunk: dict, t: float) -> Image.
         ww   = int(fnt.getlength(txt))
         items.append((txt, fnt, ww, i == active_idx))
 
-    max_w = W - 240  # Keep 120px margin clear on left and right (safe from Shorts UI icons)
+    max_w = W - 240  # Keep 120px safe horizontal margins
     lines, cur, cur_w = [], [], 0
     for item in items:
         add_w = item[2] if not cur else cur_w + space_w + item[2]
@@ -333,18 +342,28 @@ def _draw_kinetic_words(frame_img: Image.Image, chunk: dict, t: float) -> Image.
     if cur:
         lines.append((cur, cur_w))
 
-    line_h  = 86
+    line_h  = 88
     total_h = len(lines) * line_h
-    # EXACT CENTER OF SCREEN (vertically and horizontally centered)
     block_y = (H - total_h) // 2
 
     for li, (line_items, total_w) in enumerate(lines):
         x = (W - total_w) // 2
         y_base = block_y + li * line_h
         for txt, fnt, ww, is_active in line_items:
-            y = y_base - (6 if is_active else 0)
-            fill = (255, 225, 0) if is_active else (255, 255, 255)
-            draw.text((x, y), txt, font=fnt, fill=fill, stroke_width=7, stroke_fill=(0, 0, 0))
+            clean_word = txt.strip(".,!?\"'-:")
+            is_hv = clean_word in HIGH_VOLTAGE_WORDS
+            y = y_base - (8 if is_active else 0)
+
+            if is_active:
+                # 3D shadow depth layer
+                draw.text((x, y + 5), txt, font=fnt, fill=(0, 0, 0), stroke_width=10, stroke_fill=(0, 0, 0))
+                fill = (255, 60, 60) if is_hv else (255, 230, 0)
+                stroke_w = 8 if is_hv else 7
+            else:
+                fill = (255, 255, 255)
+                stroke_w = 5
+
+            draw.text((x, y), txt, font=fnt, fill=fill, stroke_width=stroke_w, stroke_fill=(0, 0, 0))
             x += ww + space_w
     return frame_img
 
@@ -493,6 +512,11 @@ def _build_shorts_clip(all_images: list, total_duration: float,
                             nxt_frame.astype(np.float32) * alpha).astype(np.uint8)
             else:
                 frame_np = cur_frame
+
+            # Subtle pro cut luminance glint (syncs with tactile mechanical cut click)
+            if img_t < 0.08:
+                glint = max(0.0, 1.0 - (img_t / 0.08)) * 28.0
+                frame_np = np.clip(frame_np.astype(np.float32) + glint, 0, 255).astype(np.uint8)
         else:
             frame_np = _gradient_bg(t)
 
