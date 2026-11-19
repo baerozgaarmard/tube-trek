@@ -117,7 +117,7 @@ def build_sfx_tracks(job_dir: str, cut_timestamps: list = None,
                      include_hook_drop: bool = True) -> list:
     """
     Build a list of MoviePy AudioClip instances placed at their respective timestamps.
-    Eliminates whooshes and applies cinematic braam impact + organic tactile cuts.
+    Original classic setup: hook sub-drop + crisp transition whooshes on cuts.
     """
     from moviepy.editor import AudioFileClip
 
@@ -126,27 +126,25 @@ def build_sfx_tracks(job_dir: str, cut_timestamps: list = None,
 
     clips = []
 
-    # 1. 0.0s Cinematic Hook Braam & Sub-Drop Impact
+    # 1. 0.0s Tension Hook Sub-Drop
     if include_hook_drop:
-        braam_path = os.path.join(sfx_dir, "hook_cinematic_braam.wav")
-        generate_cinematic_braam(braam_path)
         sub_path = os.path.join(sfx_dir, "hook_sub_drop.wav")
         generate_sub_drop(sub_path)
         try:
-            b_clip = AudioFileClip(braam_path).volumex(0.42).set_start(0.0)
-            s_clip = AudioFileClip(sub_path).volumex(0.38).set_start(0.0)
-            clips.extend([b_clip, s_clip])
+            sub_clip = AudioFileClip(sub_path).volumex(0.35).set_start(0.0)
+            clips.append(sub_clip)
         except Exception as e:
-            print(f"   ⚠ Could not load hook impact SFX: {e}")
+            print(f"   ⚠ Could not load sub-drop SFX: {e}")
 
-    # 2. Tactile Mechanical Scene Cuts (NO WHOOSHES)
-    click_path = os.path.join(sfx_dir, "cut_mechanical_click.wav")
-    generate_mechanical_click(click_path)
+    # 2. Transition Whoosh at each visual cut
+    whoosh_path = os.path.join(sfx_dir, "transition_whoosh.wav")
+    generate_whoosh(whoosh_path)
     for ts in (cut_timestamps or []):
-        if ts > 0.4:
+        if ts > 0.4:  # Avoid clashing with the initial hook drop
             try:
-                c_clip = AudioFileClip(click_path).volumex(0.18).set_start(ts)
-                clips.append(c_clip)
+                start_t = max(0.0, ts - 0.12)
+                w_clip = AudioFileClip(whoosh_path).volumex(0.22).set_start(start_t)
+                clips.append(w_clip)
             except Exception:
                 pass
 
