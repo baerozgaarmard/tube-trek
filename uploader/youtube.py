@@ -65,12 +65,14 @@ def _get_service():
 
 
 def build_description(script: dict) -> str:
-    """Standardized YouTube description with optional branding and tags."""
+    """Standardized YouTube description with optional branding and clean hashtags."""
+    import re
     desc = script.get("description", "").strip()
     parts = [desc] if desc else []
     if getattr(config, "CREDIT_TUBE_TREK", False):
         parts.append("Created autonomously with Tube Trek.")
-    tags = " ".join(f"#{t}" for t in script.get("tags", []))
+    clean_tags = [re.sub(r"[^\w]", "", t) for t in script.get("tags", []) if t]
+    tags = " ".join(f"#{t}" for t in clean_tags[:6] if t)
     if tags:
         parts.append(tags)
     return "\n\n".join(parts)
