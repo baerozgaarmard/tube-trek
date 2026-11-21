@@ -603,10 +603,10 @@ def create_video(script: dict, audio_path: str, output_dir: str,
     all_images = []
     for section in script["sections"]:
         sid   = section["id"]
-        paths = (image_map or {}).get(sid, [])
+        paths = (image_map or {}).get(sid) or []
         if isinstance(paths, str):
             paths = [paths]
-        for p in paths:
+        for p in (paths or []):
             arr = _load_broll_shot(p)
             if arr is not None:
                 all_images.append(arr)
