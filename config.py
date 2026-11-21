@@ -79,9 +79,9 @@ def brand_text() -> str:
 VOICE_ENGINE        = os.getenv("VOICE_ENGINE", "edge-tts")
 ELEVENLABS_VOICE_ID = os.getenv("ELEVENLABS_VOICE_ID", "Xb7hH8MSUJpSbSDYk0k2")
 ELEVENLABS_MODEL    = os.getenv("ELEVENLABS_MODEL", "eleven_multilingual_v2")
-VOICE_ID            = os.getenv("VOICE_ID", "en-US-AndrewNeural")
-VOICE_RATE          = '-5%'     # slow down slightly for narration feel
-VOICE_PITCH         = '-3Hz'    # slightly deeper = more cinematic
+VOICE_ID            = os.getenv("VOICE_ID", "en-US-BrianMultilingualNeural")
+VOICE_RATE          = '-3%'     # relaxed natural cadence
+VOICE_PITCH         = '-2Hz'    # natural warm baritone
 
 # ─────────────────────────────────────────
 #  YouTube Shorts Canvas (9:16 Vertical)
