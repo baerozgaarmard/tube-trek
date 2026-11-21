@@ -6,6 +6,7 @@
 
 <p>
 <a href="https://github.com/baerozgaarmard/tube-trek/releases/latest"><img src="https://img.shields.io/badge/Release-v2.1.0-blueviolet?style=for-the-badge&logo=github" alt="Release"/></a>&nbsp;
+<a href="#-100-free-zero-key-pipeline"><img src="https://img.shields.io/badge/Format-Slideshow%20Shorts-ff007f?style=for-the-badge" alt="Slideshow Shorts"/></a>&nbsp;
 <a href="#-100-free-zero-key-pipeline"><img src="https://img.shields.io/badge/Pipeline-100%25%20Free%20%C2%B7%20Zero%20API%20Keys-success?style=for-the-badge" alt="Free Pipeline"/></a>&nbsp;
 <a href="https://python.org"><img src="https://img.shields.io/badge/Python-3.10%20%7C%203.11-3776AB?style=for-the-badge&logo=python&logoColor=ffd43b" alt="Python"/></a>&nbsp;
 <a href="https://ffmpeg.org"><img src="https://img.shields.io/badge/FFmpeg-007808?style=for-the-badge&logo=ffmpeg&logoColor=white" alt="FFmpeg"/></a>&nbsp;
@@ -19,9 +20,11 @@
 <tr>
 <td width="600">
 
-**Autonomous Agent-Native YouTube Shorts Studio** that produces high-retention 9:16 vertical Shorts in a single command.
+**Autonomous Agent-Native Studio** that produces high-retention, cinematic **slideshow-type YouTube Shorts** (9:16 vertical) in a single command.
 
-Zero-repeat dynamic B-roll · Kinetic word-level captions · Sub-bass audio ducking · 100% Free with zero LLM API keys required.
+> 📸 **Slideshow-Type Shorts Engine:** Automatically converts any topic or script into an engaging visual slideshow featuring pacing-calibrated Ken Burns pans and zooms, millisecond kinetic word-level subtitles, neural narration, and dynamic audio ducking.
+
+Slideshow B-roll Cuts · Dynamic Ken Burns Motion · Kinetic Captions · Sub-bass Audio Ducking · 100% Free & Zero LLM API Keys
 
 </td>
 </tr>
@@ -162,12 +165,12 @@ flowchart LR
 </td>
 <td width="50%" valign="top">
 
-### 🔄 Zero-Repeat B-Roll Scheduling
-Every asset appears exactly **once** — no visual loops, no repeated frames.
+### 🔄 Zero-Repeat Slideshow Scheduling
+Every asset appears exactly **once** across the slideshow — no visual loops, no repeated frames.
 
 $$\text{Slot} = \max\!\Big(2.8\text{s},\;\min\!\Big(6.0\text{s},\;\frac{\text{Duration}}{N_{\text{images}}}\Big)\Big)$$
 
-Smooth Ken Burns transitions without snapping back.
+Smooth Ken Burns zoom and pan transitions across high-res stills.
 
 ### 🛡️ Network Resilience
 - **IPv4 Monkey-Patch** — forces `AF_INET` to prevent Windows SSL EOF
