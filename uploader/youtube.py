@@ -151,9 +151,10 @@ def upload_to_youtube(script: dict, video_path: str, thumbnail_path: str = None,
         except Exception as e:
             print(f"   ⚠ Thumbnail upload warning: {e}")
 
-    # Post engagement discussion comment if provided in script
+    # Post engagement discussion comment only when video is immediately public (YouTube blocks comments on private/scheduled videos with 403)
     pinned_comment = script.get("pinned_comment")
-    if pinned_comment:
+    is_public_now = (status_data.get("privacyStatus") == "public") and not publish_at
+    if pinned_comment and is_public_now:
         try:
             print("   → Posting discussion trigger comment…")
             youtube.commentThreads().insert(

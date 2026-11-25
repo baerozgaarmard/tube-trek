@@ -122,6 +122,7 @@ def produce_short(
     else:
         raise ValueError("Must provide either --topic or --script-file.")
 
+    script.setdefault("video_type", "shorts")
     job_name = job_id or slugify(script.get("title", "viral_short"))
     job_dir = os.path.join(config.OUTPUT_DIR, job_name)
     os.makedirs(job_dir, exist_ok=True)

@@ -54,8 +54,9 @@ ENV_KEYS = [
     "TIKTOK_ACCESS_TOKEN", "INSTAGRAM_ACCESS_TOKEN", "INSTAGRAM_ACCOUNT_ID",
 ]
 
-# Image sources tried in order:
-IMAGE_SOURCES = ['pixabay', 'nasa', 'openverse', 'pollinations']
+# Sources tried in order (all keyless fallbacks active even when Pexels/Pixabay keys are empty):
+IMAGE_SOURCES = ['pixabay', 'nasa', 'wikimedia', 'openverse', 'pollinations']
+VIDEO_SOURCES = ['nasa', 'wikimedia']
 
 # ─────────────────────────────────────────
 #  Channel Branding

@@ -93,13 +93,140 @@ def _openverse(query: str, orientation: str, count: int) -> list:
         "license_type": "commercial,modification",
         "aspect_ratio": "tall" if orientation == "portrait" else "wide",
         "size": "large", "mature": "false",
-    }, timeout=25)
+    }, timeout=12)
     return [{
         "url": r.get("url"),
         "credit": {"source": "Openverse", "author": r.get("creator") or "Unknown",
                    "license": f"CC {(r.get('license') or '').upper()} {r.get('license_version') or ''}".strip(),
                    "link": r.get("foreign_landing_url") or r.get("url")},
-    } for r in d.get("results", []) if r.get("url")]
+    } for r in (d or {}).get("results", []) if r.get("url")]
+
+
+_BAD_VIDEO_WORDS = re.compile(
+    r"\b(this week|interview|briefing|press|conference|panel|podcast|lecture|"
+    r"logo|award|ceremony|remarks|speech|town hall|webinar|french|german|spanish|"
+    r"russian|diagram|chart|interferometer|schema|slike|slice)\b", re.I
+)
+_BAD_PHOTO_WORDS = re.compile(
+    r"\b(book images|diagram|chart|graph|map|plate|illustration|drawing|sketch|"
+    r"manuscript|engraving|woodcut|table|equation|formula|slice|specimen|bayer)\b", re.I
+)
+
+
+def _query_tokens(query: str) -> list:
+    return [w.lower() for w in re.findall(r"[A-Za-z0-9]{3,}", query)]
+
+
+def _wikimedia(query: str, orientation: str, count: int) -> list:
+    """Keyless Wikimedia Commons raster photo search (curated photos, skips diagrams/scanned books)."""
+    tokens = _query_tokens(query)
+    d = get_json("https://commons.wikimedia.org/w/api.php", params={
+        "action": "query", "generator": "search", "gsrnamespace": "6",
+        "gsrsearch": f"{query} filetype:bitmap", "gsrlimit": max(15, count * 5),
+        "prop": "imageinfo", "iiprop": "url|mime|size|dimensions|extmetadata", "format": "json",
+    }, timeout=12)
+    pages = list((d or {}).get("query", {}).get("pages", {}).values())
+    random.shuffle(pages)
+    out = []
+    for p in pages:
+        title = p.get("title", "")
+        ii = (p.get("imageinfo") or [{}])[0]
+        url = ii.get("url", "")
+        mime = ii.get("mime", "")
+        w, h = ii.get("width") or 0, ii.get("height") or 0
+        size = ii.get("size") or 0
+        meta = ii.get("extmetadata") or {}
+        artist = re.sub(r"<[^>]+>", "", (meta.get("Artist") or {}).get("value", "")).strip() or "Wikimedia Commons"
+        if not url or mime not in ("image/jpeg", "image/png", "image/webp") or w < 640 or h < 480 or size > 8_000_000:
+            continue
+        if _BAD_PHOTO_WORDS.search(f"{title.replace('_', ' ')} {artist}"):
+            continue
+        if tokens and not any(t in title.lower() for t in tokens):
+            continue
+        lic = (meta.get("LicenseShortName") or {}).get("value", "CC/Public Domain")
+        out.append({
+            "url": url,
+            "credit": {"source": "Wikimedia", "author": artist[:50],
+                       "license": lic, "link": ii.get("descriptionurl") or url},
+        })
+    return out
+
+
+def _nasa_videos(query: str, count: int) -> list:
+    """Keyless NASA MP4 motion B-roll (visualizations & footage only, skips talk shows)."""
+    if not _SPACE_WORDS.search(query):
+        return []
+    d = get_json("https://images-api.nasa.gov/search", params={
+        "q": query, "media_type": "video", "page_size": max(12, count * 6),
+    }, timeout=12)
+    items = (d or {}).get("collection", {}).get("items", [])
+    if items:
+        random.shuffle(items)
+    out = []
+    for item in items:
+        href = item.get("href", "")
+        data = (item.get("data") or [{}])[0]
+        title = data.get("title", "")
+        if not href or _BAD_VIDEO_WORDS.search(title):
+            continue
+        try:
+            assets = get_json(href, timeout=10)
+        except Exception:
+            continue
+        mp4s = [u for u in (assets or []) if isinstance(u, str) and u.lower().endswith(".mp4")]
+        chosen = next((u for u in mp4s if "~medium." in u or "~mobile." in u), None) or (mp4s[0] if mp4s else None)
+        if not chosen:
+            continue
+        out.append({
+            "url": chosen.replace("http://", "https://"),
+            "is_video": True,
+            "seek_start": 6,  # Skip NASA intro logo card (typically 0-5s)
+            "timeout": 45,
+            "credit": {"source": "NASA Video", "author": data.get("center") or "NASA",
+                       "license": "Public domain",
+                       "link": f"https://images.nasa.gov/details/{data.get('nasa_id', '')}"},
+        })
+        if len(out) >= count * 2:
+            break
+    return out
+
+
+def _wikimedia_videos(query: str, count: int) -> list:
+    """Keyless Wikimedia Commons HD scientific/historical video clips (.webm/.mp4 under 25 MB)."""
+    tokens = _query_tokens(query)
+    d = get_json("https://commons.wikimedia.org/w/api.php", params={
+        "action": "query", "generator": "search", "gsrnamespace": "6",
+        "gsrsearch": f"{query} filetype:video", "gsrlimit": max(12, count * 5),
+        "prop": "imageinfo", "iiprop": "url|mime|size|dimensions|extmetadata", "format": "json",
+    }, timeout=12)
+    pages = list((d or {}).get("query", {}).get("pages", {}).values())
+    random.shuffle(pages)
+    out = []
+    for p in pages:
+        title = p.get("title", "")
+        ii = (p.get("imageinfo") or [{}])[0]
+        url = ii.get("url", "")
+        mime = ii.get("mime", "")
+        size = ii.get("size") or 0
+        w, h = ii.get("width") or 0, ii.get("height") or 0
+        if not url or mime not in ("video/webm", "video/mp4") or size < 80_000 or size > 25_000_000:
+            continue
+        if w < 640 or h < 480 or _BAD_VIDEO_WORDS.search(title.replace("_", " ")):
+            continue
+        if tokens and not any(t in title.lower() for t in tokens):
+            continue
+        meta = ii.get("extmetadata") or {}
+        artist = re.sub(r"<[^>]+>", "", (meta.get("Artist") or {}).get("value", "")).strip() or "Wikimedia Commons"
+        lic = (meta.get("LicenseShortName") or {}).get("value", "CC/Public Domain")
+        out.append({
+            "url": url,
+            "is_video": True,
+            "seek_start": 1,
+            "timeout": 45,
+            "credit": {"source": "Wikimedia Video", "author": artist[:50],
+                       "license": lic, "link": ii.get("descriptionurl") or url},
+        })
+    return out
 
 
 def pollinations_url(prompt: str, width: int = 1080, height: int = 1920,
@@ -117,7 +244,7 @@ def _pollinations(query: str, orientation: str, count: int) -> list:
         prompt = f"hyperrealistic award winning 8k, {query}, cinematic volumetric lighting, IMAX quality, photorealistic, 35mm lens, high contrast, no text"
         out.append({
             "url": pollinations_url(prompt, w, h, seed=s),
-            "timeout": 120,
+            "timeout": 90,
             "credit": {"source": "Pollinations AI", "author": "AI-generated",
                        "license": "Pollinations terms", "link": "https://pollinations.ai"},
         })
@@ -127,9 +254,31 @@ def _pollinations(query: str, orientation: str, count: int) -> list:
 PROVIDERS = {
     "pixabay":      _pixabay,
     "nasa":         _nasa,
+    "wikimedia":    _wikimedia,
     "openverse":    _openverse,
     "pollinations": _pollinations,
 }
+
+VIDEO_PROVIDERS = {
+    "nasa":      _nasa_videos,
+    "wikimedia": _wikimedia_videos,
+}
+
+
+def search_videos(query: str, count: int = 1, exclude_urls: set | None = None) -> list:
+    """Search keyless motion B-roll video sources in configured priority order."""
+    order = [s for s in getattr(config, "VIDEO_SOURCES", list(VIDEO_PROVIDERS)) if s in VIDEO_PROVIDERS]
+    exclude_urls = exclude_urls or set()
+    for name in order:
+        try:
+            cands = [c for c in VIDEO_PROVIDERS[name](query, count)
+                     if c.get("url") and c["url"] not in exclude_urls
+                     and c.get("credit", {}).get("link") not in exclude_urls]
+        except Exception:
+            continue
+        if cands:
+            return cands[:count * 2]
+    return []
 
 
 def search(query: str, orientation: str = "landscape", count: int = 1,
@@ -177,6 +326,10 @@ def fetch(candidate: dict, path: str) -> bool:
             r = get(url, timeout=candidate.get("timeout", 30), stream=True)
             ctype = r.headers.get("Content-Type", "")
             if "image" not in ctype and "octet-stream" not in ctype and "video" not in ctype and "mp4" not in ctype:
+                continue
+            clen = int(r.headers.get("Content-Length") or 0)
+            max_bytes = 25_000_000 if cand.get("is_video") else 8_000_000
+            if clen > max_bytes:
                 continue
             with open(path, "wb") as f:
                 for chunk in r.iter_content(8192):

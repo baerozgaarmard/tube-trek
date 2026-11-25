@@ -167,9 +167,46 @@ def _pixabay_videos(query: str, count: int) -> list:
         return []
 
 
+def _normalize_video(raw_path: str, out_mp4: str, orientation: str, seek_start: int = 1) -> bool:
+    """Trim/crop-scale a downloaded video clip into a fast 4s 30fps all-keyframe MP4."""
+    import subprocess
+    try:
+        import imageio_ffmpeg
+        ffmpeg = imageio_ffmpeg.get_ffmpeg_exe()
+    except Exception:
+        return False
+
+    w, h = (1080, 1920) if orientation == "portrait" else (1920, 1080)
+    vf = f"scale={w}:{h}:force_original_aspect_ratio=increase,crop={w}:{h},setsar=1,fps=30"
+
+    for seek in (["-ss", str(seek_start)], []):
+        cmd = [
+            ffmpeg, "-y", *seek, "-i", raw_path, "-t", "4", "-an",
+            "-vf", vf, "-c:v", "libx264", "-g", "1", "-preset", "ultrafast", "-crf", "23",
+            "-pix_fmt", "yuv420p", out_mp4,
+        ]
+        try:
+            r = subprocess.run(cmd, capture_output=True, timeout=45)
+            if r.returncode == 0 and os.path.exists(out_mp4) and os.path.getsize(out_mp4) > 20_000:
+                if raw_path != out_mp4 and os.path.exists(raw_path):
+                    os.remove(raw_path)
+                return True
+        except Exception:
+            pass
+    for p in (raw_path, out_mp4):
+        if os.path.exists(p):
+            try:
+                os.remove(p)
+            except OSError:
+                pass
+    return False
+
+
 def _candidates(query: str, orientation: str, count: int, allow_video: bool = True) -> list:
     if allow_video and orientation == "portrait":
         vids = _pexels_videos(query, orientation, count) or _pixabay_videos(query, count)
+        if not vids:
+            vids = image_apis.search_videos(query, count=1, exclude_urls=_used_urls)
         c = [x for x in vids if x["url"] not in _used_urls and x.get("credit", {}).get("link") not in _used_urls]
         if c:
             return c
@@ -180,16 +217,16 @@ def _candidates(query: str, orientation: str, count: int, allow_video: bool = Tr
                 return c
         except Exception as e:
             print(f"   ⚠ Pexels search failed for '{query}': {e}")
-    return image_apis.search(query, orientation, count, exclude_urls=_used_urls)
+    return image_apis.search(query, orientation, count, exclude_urls=_used_urls) or []
 
 
 def _fetch_images(query: str, section_index: int, images_dir: str,
                   count: int = 1, orientation: str = "landscape",
-                  img_num_start: int = 0, topic_hint: str = "") -> list:
+                  img_num_start: int = 0, topic_hint: str = "",
+                  allow_video: bool = True) -> list:
     """
-    Downloads `count` distinct images for a given query with diverse fallbacks.
+    Downloads `count` distinct media assets (motion B-roll + stills) with diverse fallbacks.
     """
-    import re
     saved = []
     rotated_fallbacks = [FALLBACK_QUERIES[(section_index + i) % len(FALLBACK_QUERIES)] for i in range(len(FALLBACK_QUERIES))]
 
@@ -199,32 +236,41 @@ def _fetch_images(query: str, section_index: int, images_dir: str,
     clean_q = " ".join(clean_words[:4]) if clean_words else query
     search_query = f"{topic_hint} {clean_q}" if (topic_hint and topic_hint.lower() not in clean_q.lower()) else clean_q
 
-    for attempt_query in [clean_q, search_query] + rotated_fallbacks:
+    for idx_attempt, attempt_query in enumerate([clean_q, search_query] + rotated_fallbacks[:3]):
         needed = count - len(saved)
         if needed <= 0:
             break
-        for cand in _candidates(attempt_query, orientation, needed):
+        # Only pull 1 video clip per query so we combine real motion clips + diverse photos cleanly
+        use_vid = allow_video and idx_attempt < 2 and not any(p.endswith(".mp4") for p in saved)
+        for cand in _candidates(attempt_query, orientation, needed, allow_video=use_vid):
             is_vid = bool(cand.get("is_video"))
-            ext = ".mp4" if is_vid else ".jpg"
-            prefix = "broll" if is_vid else "img"
-            fname = f"section_{section_index:02d}_{prefix}{img_num_start + len(saved) + 1:02d}{ext}"
-            path = os.path.join(images_dir, fname)
-            if image_apis.fetch(cand, path):
-                saved.append(path)
+            slot_num = img_num_start + len(saved) + 1
+            if is_vid:
+                raw_path = os.path.join(images_dir, f"section_{section_index:02d}_raw{slot_num:02d}.bin")
+                final_path = os.path.join(images_dir, f"section_{section_index:02d}_broll{slot_num:02d}.mp4")
+                ok = image_apis.fetch(cand, raw_path) and _normalize_video(
+                    raw_path, final_path, orientation, seek_start=int(cand.get("seek_start", 1))
+                )
+            else:
+                final_path = os.path.join(images_dir, f"section_{section_index:02d}_img{slot_num:02d}.jpg")
+                ok = image_apis.fetch(cand, final_path)
+
+            if ok:
+                saved.append(final_path)
                 _used_urls.add(cand["url"])
                 _record_used_url(cand["url"])
                 link = cand.get("credit", {}).get("link")
                 if link:
                     _used_urls.add(link)
                     _record_used_url(link)
-                _credits.append({"file": fname, "query": attempt_query, **cand["credit"]})
+                _credits.append({"file": os.path.basename(final_path), "query": attempt_query, **cand["credit"]})
             if len(saved) >= count:
                 return saved
 
-    # Guaranteed fallback: if stock APIs yielded fewer images than needed, generate via Pollinations AI
+    # Guaranteed fallback: if stock APIs yielded fewer shots than needed, generate via Pollinations AI
     needed = count - len(saved)
     if needed > 0:
-        for cand in image_apis.PROVIDERS["pollinations"](query, orientation, needed):
+        for cand in (image_apis.PROVIDERS["pollinations"](query, orientation, needed) or []):
             fname = f"section_{section_index:02d}_img{img_num_start + len(saved) + 1:02d}.jpg"
             path = os.path.join(images_dir, fname)
             if image_apis.fetch(cand, path):
@@ -239,18 +285,16 @@ def _fetch_images(query: str, section_index: int, images_dir: str,
 
 def section_images(images_dir: str, section_id: int) -> list:
     """Images already on disk for a section (used when the Images step is skipped)."""
-    return sorted(glob.glob(os.path.join(images_dir, f"section_{section_id:02d}_img*.jpg")))
+    return sorted(glob.glob(os.path.join(images_dir, f"section_{section_id:02d}_*")))
 
 
 def download_images(script: dict, output_dir: str) -> dict:
     """
-    Downloads stock images for every section.
-    Shorts: returns list of paths per section_id (for slideshow).
-    Normal: returns list of paths (or None) per section_id.
+    Downloads stock motion clips and images for every section.
+    Shorts: returns list of paths per section_id (for dynamic visual montage).
     """
     images_dir = os.path.join(output_dir, "images")
     os.makedirs(images_dir, exist_ok=True)
-    # Clear the previous run's images so stale B-roll never leaks into this video
     for old in glob.glob(os.path.join(images_dir, "section_*.*")):
         try:
             os.remove(old)
@@ -261,13 +305,13 @@ def download_images(script: dict, output_dir: str) -> dict:
     _used_urls = _load_used_urls()
 
     if not _pexels_ready():
-        order = " → ".join(getattr(config, "IMAGE_SOURCES", []))
-        print(f"   → No Pexels key — using free sources: {order}")
+        img_ord = " → ".join(getattr(config, "IMAGE_SOURCES", []))
+        vid_ord = " → ".join(getattr(config, "VIDEO_SOURCES", []))
+        print(f"   → No Pexels key — using keyless video ({vid_ord}) + image ({img_ord})")
 
     is_shorts        = script.get("video_type") == "shorts"
     orientation      = "portrait" if is_shorts else "landscape"
 
-    # Extract meaningful topic keywords (skip stopwords like "You Are Inside A")
     raw_title = script.get("title", "")
     _stop = {"you", "are", "is", "was", "in", "inside", "a", "an", "the", "if", "what",
              "why", "how", "right", "now", "we", "to", "of", "for", "on", "from", "with"}
@@ -277,24 +321,23 @@ def download_images(script: dict, output_dir: str) -> dict:
     image_map = {}
     for section in script.get("sections", []):
         sid   = section["id"]
-        # Collect all image queries defined for this section
         queries = [section.get("image_query", "science universe space")]
         for extra_key in ("image_query_2", "image_query_3", "image_query_4", "image_query_5"):
             q = section.get(extra_key, "").strip()
             if q:
                 queries.append(q)
 
-        # Shorts: one image per query; normal: first 3 queries for B-roll cuts
         count_per_q = 2 if is_shorts else (2 if len(queries) < 3 else 1)
         use = queries if is_shorts else queries[:5]
-        print(f"   → [{sid}] {len(use)} queries × {count_per_q} image(s) each")
+        print(f"   → [{sid}] {len(use)} queries × {count_per_q} shot(s) each")
         paths = []
         for qi, q in enumerate(use):
             paths.extend(_fetch_images(q, sid, images_dir,
                                        count=count_per_q, orientation=orientation,
-                                       img_num_start=qi, topic_hint=topic_hint))
+                                       img_num_start=len(paths), topic_hint=topic_hint,
+                                       allow_video=(qi == 0)))
         image_map[sid] = paths if (paths or is_shorts) else None
-        print(f"         saved {len(paths)} images")
+        print(f"         saved {len(paths)} shots")
 
     with open(os.path.join(output_dir, "credits.json"), "w", encoding="utf-8") as f:
         json.dump(_credits, f, indent=2)
@@ -302,5 +345,5 @@ def download_images(script: dict, output_dir: str) -> dict:
     for c in _credits:
         by_source[c["source"]] = by_source.get(c["source"], 0) + 1
     if by_source:
-        print("   → Image sources: " + ", ".join(f"{k} ×{v}" for k, v in by_source.items()))
+        print("   → Media sources: " + ", ".join(f"{k} ×{v}" for k, v in by_source.items()))
     return image_map

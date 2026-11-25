@@ -133,7 +133,7 @@ def _get_shot_frame(shot, t_shot: float, idx: int, slot_dur: float) -> np.ndarra
     """Extract a frame from either a video clip or zoom-pulsed static image."""
     if isinstance(shot, dict) and shot.get("type") == "video":
         vclip = shot["clip"]
-        v_t = t_shot % max(vclip.duration, 0.1)
+        v_t = t_shot % max(vclip.duration - 0.08, 0.05)
         raw = vclip.get_frame(v_t)
         fh, fw = raw.shape[:2]
         if fw != W or fh != H:
@@ -280,7 +280,7 @@ def _zoom_pulse(base: np.ndarray, img_t: float, img_index: int = 0, slot_dur: fl
     x0 = max(0, min(x0, W - crop_w))
     y0 = max(0, min(y0, H - crop_h))
     cropped = base[y0: y0 + crop_h, x0: x0 + crop_w]
-    return np.array(Image.fromarray(cropped).resize((W, H), Image.LANCZOS), dtype=np.uint8)
+    return np.array(Image.fromarray(cropped).resize((W, H), Image.BILINEAR), dtype=np.uint8)
 
 
 def _group_kinetic_chunks(word_timings: list, max_words: int = 3) -> list:
