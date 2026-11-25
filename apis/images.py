@@ -73,6 +73,9 @@ def _nasa(query: str, orientation: str, count: int) -> list:
         data = (item.get("data") or [{}])[0]
         if not links:
             continue
+        meta_text = f"{data.get('title', '')} {data.get('nasa_id', '')} {' '.join(data.get('keywords') or [])}"
+        if _BAD_PHOTO_WORDS.search(meta_text.replace("_", " ")):
+            continue
         href = links[0].get("href", "")
         # Prefer original / large resolution
         orig_href = re.sub(r"~(thumb|small|medium)\.", "~orig.", href)
@@ -103,14 +106,14 @@ def _openverse(query: str, orientation: str, count: int) -> list:
 
 
 _BAD_VIDEO_WORDS = re.compile(
-    r"\b(this week|interview|briefing|press|conference|panel|podcast|lecture|"
+    r"\b(this week|what's up|whats up|interview|briefing|press|conference|panel|podcast|lecture|"
     r"logo|award|ceremony|remarks|speech|town hall|webinar|french|german|spanish|"
     r"russian|diagram|chart|interferometer|schema|slike|slice|subtitle|subtitles|captioned)\b", re.I
 )
 _BAD_PHOTO_WORDS = re.compile(
     r"\b(book images|diagram|chart|graph|map|plate|illustration|drawing|sketch|"
     r"manuscript|engraving|woodcut|table|equation|formula|slice|specimen|bayer|"
-    r"rawpixel|vintage|where to find|screenshot)\b", re.I
+    r"rawpixel|vintage|where to find|screenshot|patch|insignia|crest|emblem|sticker|badge|decal|sts-)\b", re.I
 )
 
 
