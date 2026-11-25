@@ -26,7 +26,7 @@ from video.stock import download_images
 from video.narrator import generate_narration
 from video.music import mix_music_with_narration
 from video.creator import create_video
-from video.thumbnail import render as render_thumb
+from video.thumbnail import auto_text, render as render_thumb
 from uploader.multi import publish_short
 
 
@@ -182,8 +182,7 @@ def produce_short(
          if p and not str(p).lower().endswith((".mp4", ".mov", ".mkv", ".webm"))),
         None,
     )
-    title_words = script.get("title", "VIRAL SHORT").upper().split()
-    headline = thumb_text or " ".join(title_words[:5])
+    headline = thumb_text or auto_text(script.get("title", "VIRAL SHORT")) or " ".join(script.get("title", "VIRAL SHORT").upper().split()[:5])
     render_thumb(
         style="impact",
         out_path=thumb_path,

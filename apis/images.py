@@ -113,7 +113,8 @@ _BAD_VIDEO_WORDS = re.compile(
 _BAD_PHOTO_WORDS = re.compile(
     r"\b(book images|diagram|chart|graph|map|plate|illustration|drawing|sketch|"
     r"manuscript|engraving|woodcut|table|equation|formula|slice|specimen|bayer|"
-    r"rawpixel|vintage|where to find|screenshot|patch|insignia|crest|emblem|sticker|badge|decal|sts-)\b", re.I
+    r"rawpixel|vintage|where to find|screenshot|patch|insignia|crest|emblem|sticker|"
+    r"badge|decal|sts-|calendar|infographic|poster)\b", re.I
 )
 
 
