@@ -105,11 +105,12 @@ def _openverse(query: str, orientation: str, count: int) -> list:
 _BAD_VIDEO_WORDS = re.compile(
     r"\b(this week|interview|briefing|press|conference|panel|podcast|lecture|"
     r"logo|award|ceremony|remarks|speech|town hall|webinar|french|german|spanish|"
-    r"russian|diagram|chart|interferometer|schema|slike|slice)\b", re.I
+    r"russian|diagram|chart|interferometer|schema|slike|slice|subtitle|subtitles|captioned)\b", re.I
 )
 _BAD_PHOTO_WORDS = re.compile(
     r"\b(book images|diagram|chart|graph|map|plate|illustration|drawing|sketch|"
-    r"manuscript|engraving|woodcut|table|equation|formula|slice|specimen|bayer)\b", re.I
+    r"manuscript|engraving|woodcut|table|equation|formula|slice|specimen|bayer|"
+    r"rawpixel|vintage|where to find|screenshot)\b", re.I
 )
 
 

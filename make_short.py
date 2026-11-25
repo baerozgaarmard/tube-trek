@@ -178,7 +178,8 @@ def produce_short(
     print("\n[5/5] Designing high-contrast 9:16 portrait thumbnail...")
     thumb_path = os.path.join(job_dir, "thumbnail.jpg")
     bg_candidate = next(
-        (imgs[0] if isinstance(imgs, list) and imgs else imgs for imgs in image_map.values() if imgs),
+        (p for imgs in image_map.values() for p in (imgs if isinstance(imgs, list) else [imgs])
+         if p and not str(p).lower().endswith((".mp4", ".mov", ".mkv", ".webm"))),
         None,
     )
     title_words = script.get("title", "VIRAL SHORT").upper().split()
