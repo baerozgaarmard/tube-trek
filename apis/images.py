@@ -328,7 +328,7 @@ def fetch(candidate: dict, path: str) -> bool:
             if "image" not in ctype and "octet-stream" not in ctype and "video" not in ctype and "mp4" not in ctype:
                 continue
             clen = int(r.headers.get("Content-Length") or 0)
-            max_bytes = 25_000_000 if cand.get("is_video") else 8_000_000
+            max_bytes = 25_000_000 if candidate.get("is_video") else 8_000_000
             if clen > max_bytes:
                 continue
             with open(path, "wb") as f:
